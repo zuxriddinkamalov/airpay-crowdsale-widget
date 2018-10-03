@@ -5,12 +5,27 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "postinstall": "npm install express"
   },
   "dependencies": {
+    "apollo-boost": "^0.1.16",
+    "apollo-cache-inmemory": "^1.2.10",
+    "apollo-client": "^2.4.2",
+    "apollo-link": "^1.2.3",
+    "apollo-link-http": "^1.5.5",
+    "element-ui": "^2.4.7",
+    "font-awesome": "^4.7.0",
+    "graphql": "^14.0.2",
+    "graphql-tag": "^2.9.2",
+    "ramda": "^0.25.0",
     "vue": "^2.5.17",
+    "vue-apollo": "^3.0.0-beta.25",
+    "vue-ramda": "^1.0.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vuex-loading": "^1.0.4",
+    "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.4",

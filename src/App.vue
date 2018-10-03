@@ -1,29 +1,52 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+
+</style>
+
+<script>
+import { SETTINGS_MUTATION } from '@/graphql/airpay/mutations'
+import { SET_AIRPAY_DATA } from '@/store/modules/airpay/mutation-types'
+import { prop } from 'ramda'
+
+export default {
+  name: 'App',
+  apollo: {
+    settings: {
+      query: SETTINGS_MUTATION,
+      update (response) {
+        const data = prop('initCrowdsale', response)
+        this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+          ...this.$store.state.airpay,
+          settings: data,
+          loading: false
+        })
+      },
+      error (error) {
+        this.$notify.error({
+          title: 'Error',
+          message: error.message,
+          showClose: false
+        })
+      },
+      watchLoading (isLoading, countModifier) {
+        this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+          ...this.$store.state.airpay,
+          loading: isLoading
+        })
+      }
     }
   }
 }
+</script>
+
+<style>
+   html, body, #app {
+    width: 100%;
+    height: 100%;
+  }
 </style>
