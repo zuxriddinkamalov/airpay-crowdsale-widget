@@ -29,3 +29,8 @@ export const PERFORM_BUYING_MUTATION = gql`
       currency
     }
   }`
+
+export const WITHDRAW_TOKENS_MUTATION = gql`
+  mutation($address: String!) {
+    withdrawTokens(address: $address)
+  }`

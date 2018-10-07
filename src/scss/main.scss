@@ -4,11 +4,32 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 @import "~element-ui/packages/theme-chalk/src/index";
 
 * {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif!important;
+}
+.fa {
+  font: normal normal normal 14px/1 FontAwesome !important;
+}
+
+.el-input__inner {
+  height: 48px;
+  font-size: 18px!important;
+  color: #888888;
 }
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.validate-error-header {
+  font-weight: bold;
+  line-height: 1.8
+}
+.validate-error-list {
+  line-height: 1.4;
+  list-style: circle
+}
+.validate-error {
+  margin-left: 15px
 }

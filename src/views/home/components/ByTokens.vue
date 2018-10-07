@@ -4,14 +4,11 @@
             <img class="flag" src="images/flag-usa.png" alt="" />
             User from <span class="bold">USA</span> pledge <span class="bold">3.45 ETH</span>
         </div>
-        <el-form ref="buyTokenForm" :model="form">
-            <el-form-item class="pledge"
-              prop="pledge"
-              :rules="[
-              { required: true, message: 'Amount is required', trigger: 'blur' },
-            ]">
+        <el-form ref="buyTokenForm" :rules="rulesByToken" :model="form">
+            <el-form-item class="pledge input-with-button"
+              prop="pledge">
                 <slot name="label"><div class="uppercase label">You pladge</div></slot>
-                <el-input type="number" v-model="form.pledge">
+                <el-input min="1" type="number" v-model="form.pledge">
                     <el-select class="currency" v-model="form.currency" slot="append">
                         <el-option label="BTC" value="btc"></el-option>
                         <el-option label="ETH" value="eth"></el-option>
@@ -22,15 +19,15 @@
                 <el-row>
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">You get</div></slot>
-                        <h3>
+                        <h3 class="bold">
                             <span class="summ">{{getSumm($R.path(['settings', 'rate'], airpay))}}</span>
-                            &nbsp;<span class="uppercase bold">{{$R.path(['settings', 'name'], airpay)}}</span>
+                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'name'], airpay)}}</span>
                         </h3>
                     </el-col>
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase gray label">Bonuses</div></slot>
                         <h3>
-                            <span class="bold">{{$R.path(['settings', 'bonus'], airpay)}}%</span>
+                            <span class="bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
                             &nbsp;<span class="period uppercase">Ends in 21 days</span>
                         </h3>
                     </el-col>
@@ -38,11 +35,7 @@
             </el-form-item>
             <el-form-item
               class="email"
-              prop="email"
-              :rules="[
-                  { required: true, message: 'Email required', trigger: 'blur' },
-                  { type: 'email', message: 'Please enter valid email', trigger: 'blur' }
-                ]">
+              prop="email">
                 <slot name="label"><div class="uppercase label">Please enter your email</div></slot>
                 <el-input placeholder="Please enter email" type="email" v-model="form.email"></el-input>
             </el-form-item>
@@ -62,12 +55,12 @@
                     class="code input-with-button"
                     prop="code"
                     :rules="[
-                  { required: true, message: 'Please enter verification code 4 digits', trigger: 'blur' },
+                    { required: true, message: 'Please enter verification code 4 digits', trigger: 'blur' },
                 ]">
                     <slot name="label">
                         <div class="uppercase label">Check your email and enter code</div>
                     </slot>
-                    <el-input placeholder="Verification code" v-model="form.code">
+                    <el-input type="password" placeholder="Verification code" v-model="form.code">
                         <el-button
                            @click="buyTokens('buyTokenForm')"
                            class="input-button"
@@ -87,23 +80,42 @@
 </template>
 
 <script>
-import { prop, forEach, map, path } from 'ramda'
+import { prop, path } from 'ramda'
 import { mapState } from 'vuex'
 import { BY_TOKENS_MUTATION, PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { prepareValidateErrors } from '../../../helpers/general'
 
 export default {
   name: 'ByTokens',
   data: function () {
+    let checkZero = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('Amount is required'))
+      } else if (value < 1) {
+        callback(new Error('Amount can not be less then one'))
+      } else {
+        callback()
+      }
+    }
     return {
       loading: false,
       form: {
-        pledge: 0,
+        pledge: null,
         email: '',
         verificationCode: '',
         currency: 'btc',
         hash: ''
+      },
+      rulesByToken: {
+        pledge: [
+          { validator: checkZero, message: 'Amount can not be less then one', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: 'Email required', trigger: 'blur' },
+          { type: 'email', message: 'Please enter valid email', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -114,10 +126,10 @@ export default {
     getSumm: function (rate) {
       let price = parseFloat(prop('pledge', this.form)) * rate
       if (price) {
-        let val = (price).toFixed(2).replace('.', ',')
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+        let val = (price).toFixed(0)
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       }
-      return '0.00'
+      return '0'
     },
     buyTokens (formName) {
       this.$refs[formName].validate((valid, error) => {
@@ -138,12 +150,7 @@ export default {
             this.loading = false
           })
         } else {
-          let message = '<p>Error in validating</p>'
-          map((item, index) => {
-            forEach(msg => {
-              message += `<p>${msg.message}</p>`
-            }, item)
-          }, error)
+          let message = prepareValidateErrors(error)
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
@@ -154,30 +161,52 @@ export default {
       })
     },
     verificate (formName) {
-      this.$refs[formName].validate((valid, error) => {
-        if (valid) {
-          this.loading = true
-          this.$apollo.mutate({
-            mutation: PERFORM_BUYING_MUTATION,
-            variables: {
-              hash: prop('hash', this.airpay),
-              code: '1111',
-              amount: this.form.pledge,
-              currency: this.form.currency
+      let self = this
+      let enter = new Promise(function (resolve, reject) {
+        self.$refs['buyTokenForm'].validate(
+          (valid, error) => {
+            if (valid) {
+              resolve()
+            } else {
+              let message = prepareValidateErrors(error)
+              self.$message({
+                dangerouslyUseHTMLString: true,
+                type: 'error',
+                message: message
+              })
             }
-          }).then(response => {
-            let data = path(['data', 'buyTokens'], response)
-            console.warn(response)
-            this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...this.$store.state.airpay,
-              byTokenData: data
-            })
-            this.$store.commit(SET_GENERAL_DATA, 'VDeposit')
-            this.loading = false
-          }).catch(response => {
-            this.loading = false
+          }
+        )
+      })
+      let verification = new Promise(function (resolve, reject) {
+        self.$refs[formName].validate((valid, error) => {
+          if (valid) {
+            resolve()
+          }
+        })
+      })
+      Promise.all([enter, verification]).then(function () {
+        self.loading = true
+        self.$apollo.mutate({
+          mutation: PERFORM_BUYING_MUTATION,
+          variables: {
+            hash: prop('hash', self.airpay),
+            code: '1111',
+            amount: self.form.pledge,
+            currency: self.form.currency
+          }
+        }).then(response => {
+          let data = path(['data', 'buyTokens'], response)
+          self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+            ...self.$store.state.airpay,
+            byTokenData: data
           })
-        }
+          sessionStorage.setItem('token', prop('authorization', data))
+          self.$store.commit(SET_GENERAL_DATA, 'VDeposit')
+          self.loading = false
+        }).catch(response => {
+          self.loading = false
+        })
       })
     }
   },
@@ -206,7 +235,9 @@ export default {
         color: #313131
         word-break: break-word
         & h3, .summ
+            color: #000
             line-height: 1
+            letter-spacing: 2px
             font-size: 22px
         .period
             vertical-align: middle
@@ -214,10 +245,4 @@ export default {
             padding: 5px
             border: 1px solid #CDD6E9
             color: #CDD6E9
-    .code.is-error
-        & input:focus ~ .el-input-group__append, .el-input-group__append
-            border-color: #f56c6c
-    .code.is-success
-        & input:focus ~ .el-input-group__append, .el-input-group__append
-            border-color: #67c23a
 </style>

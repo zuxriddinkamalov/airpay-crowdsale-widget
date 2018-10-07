@@ -13,9 +13,6 @@
                 </el-steps>
                 <component :is="component"></component>
             </el-main>
-           <!-- Hello world
-            {{$apollo.queries}}
-            {{settings}}-->
         </el-container>
     </div>
 </template>
@@ -34,10 +31,13 @@ import VHeader from './Header'
 
 import ByTokens from './ByTokens'
 import VDeposit from './Deposit'
+import VEthereum from './Ethereum'
+import VIdentity from './Identity'
+import VFinish from './Finish'
 
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 
-const STEPS = ['ByTokens', 'VDeposit', '']
+const STEPS = ['ByTokens', 'VDeposit', 'VEthereum']
 
 export default {
   name: 'Container',
@@ -48,16 +48,16 @@ export default {
     }
   },
   mounted () {
-    document.body.style.background = getRGB(path(['settings', 'color'], this.settings), 0.1)
-    let self = this
-    let buttons = document.getElementsByClassName('button')
-    forEach(index => {
-      buttons.item(index).style.boxShadow = '0 4px 7px 0 ' + getRGB(path(['settings', 'color'], self.settings), 0.47)
-    }, range(0, buttons.length))
+    sessionStorage.removeItem('token')
     this.$store.commit(SET_GENERAL_DATA, 'ByTokens')
   },
   updated () {
-    console.warn('UPDATED')
+    let baseColor = path(['settings', 'color'], this.settings)
+    document.body.style.background = getRGB(baseColor, 0.1)
+    let buttons = document.getElementsByClassName('button')
+    forEach(index => {
+      buttons.item(index).style.boxShadow = '0 4px 7px 0 ' + getRGB(baseColor, 0.47)
+    }, range(0, buttons.length))
   },
   computed: {
     ...mapState([
@@ -66,7 +66,7 @@ export default {
     getStep () {
       let active = this.component
       let index = findIndex(step => step === active, STEPS)
-      if (isNil(index)) {
+      if (isNil(index) || Boolean(index)) {
         return 3
       }
       return index + 1
@@ -75,13 +75,18 @@ export default {
   components: {
     VHeader,
     ByTokens,
-    VDeposit
+    VDeposit,
+    VEthereum,
+    VIdentity,
+    VFinish
   }
 }
 </script>
 
 <style lang="sass">
     $BASE_COLOR: #565656
+    .center
+        text-align: center
     .info-tooltip
         line-height: 1.4
         color: #777777
@@ -131,6 +136,12 @@ export default {
             background: transparent
         .el-input-group--append .el-input__inner
             border-right: none
+    .input-with-button.is-error
+        & input:focus ~ .el-input-group__append, .el-input-group__append
+            border-color: #f56c6c
+    .input-with-button.is-success
+        & input:focus ~ .el-input-group__append, .el-input-group__append
+            border-color: #67c23a
     .body
         display: flex
         align-items: center
@@ -150,7 +161,15 @@ export default {
                     .el-step.is-horizontal .el-step__line
                         height: 5px
                         top: 9px
+                        background-color: #E4EAF0
                     .el-step__line-inner
                         border-width: 3px!important
+                    .el-step__icon.is-text
+                        border-color: #E4EAF0
+                        color: #AFC0D0
+                    .is-finish
+                        .el-step__icon.is-text
+                            color: #377DFE
+                            border-color: #377DFE
 
 </style>

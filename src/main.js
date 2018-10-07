@@ -11,6 +11,7 @@ import './plugins/element-ui'
 import './plugins/vuex-router-sync'
 import './plugins/vue-ramda'
 import './plugins/vue-qriously'
+import './plugins/vue-clipboard'
 import { router } from './plugins/vue-router'
 import { apolloProvider } from './plugins/vue-apollo'
 
