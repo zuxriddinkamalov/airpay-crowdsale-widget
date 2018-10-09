@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { prop } from 'ramda'
+import { prop, omit } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
@@ -134,9 +134,7 @@ export default {
       })
     },
     selectFile: function (file, fileList, key) {
-      console.warn(file)
-      this.form[key] = prop('raw', file)
-      console.warn(this.form)
+      this.form[key] = omit(['uid'], prop('raw', file))
     }
   }
 }
