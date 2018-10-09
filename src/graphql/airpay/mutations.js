@@ -34,3 +34,8 @@ export const WITHDRAW_TOKENS_MUTATION = gql`
   mutation($address: String!) {
     withdrawTokens(address: $address)
   }`
+
+export const UPLOAD_DOC_MUTATION = gql`
+  mutation($selfie: Upload!, $front: Upload!) {
+    uploadDoc(selfie: $selfie, front: $front)
+  }`

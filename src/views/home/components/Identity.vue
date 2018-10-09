@@ -22,26 +22,44 @@
                 <div class="photos">
                     <el-row :gutter="15">
                         <el-col class="id-card" :xs="24" :sm="12">
-                            <div class="upload" :style="{
-                                backgroundImage: 'url(images/pass.png)'
-                            }">
-                                <el-upload
-                                    action="#"
-                                    :auto-upload="false">
-                                    <el-button slot="trigger" size="small" round>Upload selfie with your ID Card</el-button>
-                                </el-upload>
-                            </div>
+                            <el-form-item
+                                prop="selfie"
+                                :rules="[
+                                { required: true, message: 'Please select selfie file', trigger: 'blur' },
+                            ]">
+                                <div class="upload" :style="{
+                                    backgroundImage: 'url(images/pass.png)'
+                                }">
+                                    <el-upload
+                                        action="#"
+                                        :limit="1"
+                                        :show-file-list="false"
+                                        :on-change="(file, fileList) => selectFile(file, fileList, 'selfie')"
+                                        :auto-upload="false">
+                                        <el-button slot="trigger" size="small" round>Upload selfie with your ID Card</el-button>
+                                    </el-upload>
+                                </div>
+                            </el-form-item>
                         </el-col>
                         <el-col class="id-card-detail" :xs="24" :sm="12">
-                            <div class="upload" :style="{
-                                backgroundImage: 'url(images/inhand.png)'
-                            }">
-                                <el-upload
-                                    action="#"
-                                    :auto-upload="false">
-                                    <el-button size="small" round>Upload your ID Card in detail view</el-button>
-                                </el-upload>
-                            </div>
+                            <el-form-item
+                                prop="front"
+                                :rules="[
+                                { required: true, message: 'Please select front file', trigger: 'blur' },
+                            ]">
+                                <div class="upload" :style="{
+                                    backgroundImage: 'url(images/inhand.png)'
+                                }">
+                                    <el-upload
+                                        action="#"
+                                        :limit="1"
+                                        :show-file-list="false"
+                                        :on-change="(file, fileList) => selectFile(file, fileList, 'front')"
+                                        :auto-upload="false">
+                                        <el-button size="small" round>Upload your ID Card in detail view</el-button>
+                                    </el-upload>
+                                </div>
+                            </el-form-item>
                         </el-col>
                     </el-row>
                 </div>
@@ -63,8 +81,10 @@
 </template>
 
 <script>
+import { prop } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
 
 export default {
   name: 'Identity',
@@ -73,8 +93,8 @@ export default {
       loading: false,
       form: {
         docType: 'idCard',
-        idCard: null,
-        idCardDetail: null
+        selfie: null,
+        front: null
       }
     }
   },
@@ -82,7 +102,26 @@ export default {
     submit (formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+          this.loading = true
+          console.warn(this.form)
+          this.$apollo.mutate({
+            mutation: UPLOAD_DOC_MUTATION,
+            variables: {
+              selfie: prop('selfie', this.form),
+              front: prop('front', this.form)
+            }
+          }).then(response => {
+            /* let data = path(['data', 'buyTokens'], response)
+            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+              ...self.$store.state.airpay,
+              byTokenData: data
+            }) */
+            console.warn(response)
+            this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+            this.loading = false
+          }).catch(response => {
+            this.loading = false
+          })
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
@@ -93,6 +132,11 @@ export default {
           return false
         }
       })
+    },
+    selectFile: function (file, fileList, key) {
+      console.warn(file)
+      this.form[key] = prop('raw', file)
+      console.warn(this.form)
     }
   }
 }
