@@ -9,15 +9,16 @@
 
 import Vue from 'vue'
 import { ApolloClient } from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
+// import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
 import { setContext } from 'apollo-link-context'
+import { createUploadLink } from 'apollo-upload-client'
 // import { onError } from 'apollo-link-error'
 
 import { API_URL } from '@/constant/api'
 
-const httpLink = new HttpLink({
+const httpLink = new createUploadLink({
   // You should use an absolute URL here
   uri: API_URL
 })

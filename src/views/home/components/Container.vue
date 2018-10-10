@@ -22,8 +22,7 @@ import {
   path,
   forEach,
   range,
-  findIndex,
-  isNil } from 'ramda'
+  findIndex } from 'ramda'
 import { mapState } from 'vuex'
 
 import { getRGB } from '../../../helpers/colors'
@@ -65,11 +64,11 @@ export default {
     ]),
     getStep () {
       let active = this.component
-      let index = findIndex(step => step === active, STEPS)
-      if (isNil(index) || Boolean(index)) {
+      let index = findIndex(step => step === active, STEPS) + 1
+      if (!index) {
         return 3
       }
-      return index + 1
+      return index
     }
   },
   components: {

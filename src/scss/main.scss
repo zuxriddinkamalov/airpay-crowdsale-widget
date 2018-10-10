@@ -10,6 +10,14 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
   font: normal normal normal 14px/1 FontAwesome !important;
 }
 
+.el-loading-mask.is-fullscreen {
+  background-color: rgba(55, 125, 254, 0.2)!important;
+  .el-loading-spinner .el-loading-text, .el-loading-spinner i {
+    color: rgba(55, 125, 254, 1);
+    font-size: 20px;
+  }
+}
+
 .el-input__inner {
   height: 48px;
   font-size: 18px!important;

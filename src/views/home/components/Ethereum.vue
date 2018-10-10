@@ -1,11 +1,11 @@
 <template>
     <div>
-        <el-form :model="form" ref="ethForm">
+        <el-form :model="form" :rules="rulesEthereum" ref="ethForm">
+            <!--
+            0xBff22763a7D6e15Bd744422bb00961683F771595
+            -->
             <el-form-item
-                prop="ethAddress"
-                :rules="[
-              { required: true, message: 'Ethereum address required', trigger: 'blur' }
-            ]">
+                prop="ethAddress">
                 <slot name="label"><div class="eth-address bold">Enter your Ethereum address to receipt tokens:</div></slot>
                 <el-input class="receipter" placeholder="Please enter ethereum address" v-model="form.ethAddress"></el-input>
             </el-form-item>
@@ -26,16 +26,31 @@
 </template>
 
 <script>
+import { isAddress } from 'ethereum-address'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Ethereum',
   data: function () {
+    let checkEthereum = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('Ethereum address required'))
+      } else if (!isAddress(value)) {
+        callback(new Error('Please enter valid ethereum address'))
+      } else {
+        callback()
+      }
+    }
     return {
       loading: false,
       form: {
         ethAddress: ''
+      },
+      rulesEthereum: {
+        ethAddress: [
+          { validator: checkEthereum, trigger: 'blur' }
+        ]
       }
     }
   },

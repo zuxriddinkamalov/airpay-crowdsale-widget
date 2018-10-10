@@ -21,9 +21,7 @@ export default new Vuex.Store({
   /**
    * Assign the modules to the store.
    */
-  state: {
-    component: ''
-  },
+
   modules: {
     airpay
   },

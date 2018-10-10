@@ -60,7 +60,7 @@
                     <slot name="label">
                         <div class="uppercase label">Check your email and enter code</div>
                     </slot>
-                    <el-input type="password" placeholder="Verification code" v-model="form.code">
+                    <el-input placeholder="Verification code" v-model="form.code">
                         <el-button
                            @click="buyTokens('buyTokenForm')"
                            class="input-button"

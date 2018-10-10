@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { prop, omit } from 'ramda'
+import { prop, path } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
@@ -103,7 +103,7 @@ export default {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.loading = true
-          console.warn(this.form)
+          // console.warn(this.form)
           this.$apollo.mutate({
             mutation: UPLOAD_DOC_MUTATION,
             variables: {
@@ -116,8 +116,10 @@ export default {
               ...self.$store.state.airpay,
               byTokenData: data
             }) */
-            console.warn(response)
-            this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+            let status = path(['data', 'uploadDoc'], response)
+            if (status) {
+              this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+            }
             this.loading = false
           }).catch(response => {
             this.loading = false
@@ -134,7 +136,7 @@ export default {
       })
     },
     selectFile: function (file, fileList, key) {
-      this.form[key] = omit(['uid'], prop('raw', file))
+      this.form[key] = prop('raw', file)
     }
   }
 }
