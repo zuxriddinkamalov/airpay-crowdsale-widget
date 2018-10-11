@@ -51,6 +51,7 @@ export default {
         text-align: center
     .finish-description
         font-size: 14px
+        letter-spacing: 0.5px
         line-height: 1.4
         margin: 20px auto 50px
         max-width: 400px

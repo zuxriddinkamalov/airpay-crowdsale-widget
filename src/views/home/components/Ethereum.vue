@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-form :model="form" :rules="rulesEthereum" ref="ethForm">
+    <div @keyup.enter="withdraw('ethForm')">
+        <el-form @submit.prevent.native :model="form" :rules="rulesEthereum" ref="ethForm">
             <!--
             0xBff22763a7D6e15Bd744422bb00961683F771595
             -->

@@ -1,10 +1,9 @@
 <template>
-    <div>
+    <div @keyup.enter="submit">
         <div class="info-tooltip">
-            <img class="flag" src="images/flag-usa.png" alt="" />
-            User from <span class="bold">USA</span> pledge <span class="bold">3.45 ETH</span>
+            <VTextSlider :data='sliderText' :interval="3" :timer="2" :infinite="true" filter="bottom-top" />
         </div>
-        <el-form ref="buyTokenForm" :rules="rulesByToken" :model="form">
+        <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
               prop="pledge">
                 <slot name="label"><div class="uppercase label">You pladge</div></slot>
@@ -28,7 +27,7 @@
                         <slot name="label"><div class="uppercase gray label">Bonuses</div></slot>
                         <h3>
                             <span class="bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
-                            &nbsp;<span class="period uppercase">Ends in 21 days</span>
+                            <!--&nbsp;<span class="period uppercase">Ends in 21 days</span>-->
                         </h3>
                     </el-col>
                 </el-row>
@@ -50,7 +49,7 @@
             </div>
         </el-form>
         <div v-if="$R.prop('hash', airpay)" class="verification">
-            <el-form ref="verificateForm" :model="form">
+            <el-form @submit.prevent.native ref="verificateForm" :model="form">
                 <el-form-item
                     class="code input-with-button"
                     prop="code"
@@ -80,12 +79,41 @@
 </template>
 
 <script>
-import { prop, path } from 'ramda'
+import { prop, path, map } from 'ramda'
 import { mapState } from 'vuex'
+
+import VTextSlider from '@/components/TextSlider'
 import { BY_TOKENS_MUTATION, PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
+
+const SLIDER = [
+  {
+    flag: 'images/flag-usa.png',
+    country: 'USA',
+    sum: 3.45,
+    currency: 'ETH'
+  },
+  {
+    flag: 'images/flag-usa.png',
+    country: 'England',
+    sum: 2.34,
+    currency: 'BTC'
+  },
+  {
+    flag: 'images/flag-usa.png',
+    country: 'Brazil',
+    sum: 45.4,
+    currency: 'ETH'
+  },
+  {
+    flag: 'images/flag-usa.png',
+    country: 'France',
+    sum: 4.9,
+    currency: 'BTC'
+  }
+]
 
 export default {
   name: 'ByTokens',
@@ -101,6 +129,10 @@ export default {
     }
     return {
       loading: false,
+      sliderText: map(item =>
+        `<img class="flag" src="${item.flag}" alt="" />
+        User from <span class="bold">${item.country}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`
+        , SLIDER),
       form: {
         pledge: null,
         email: '',
@@ -130,6 +162,13 @@ export default {
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       }
       return '0'
+    },
+    submit: function () {
+      if (prop('hash', this.airpay)) {
+        this.verificate('verificateForm')
+      } else {
+        this.buyTokens('buyTokenForm')
+      }
     },
     buyTokens (formName) {
       this.$refs[formName].validate((valid, error) => {
@@ -214,6 +253,9 @@ export default {
     ...mapState([
       'airpay'
     ])
+  },
+  components: {
+    VTextSlider
   }
 }
 </script>
@@ -224,6 +266,8 @@ export default {
         max-width: 20px
         margin-right: 10px
         vertical-align: middle
+    .text-slider-root
+        min-height: 23px
     .pledge
         & input, .currency
             font-weight: 600

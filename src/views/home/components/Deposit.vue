@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-form :model="form">
+    <div @keyup.enter="withdraw">
+        <el-form @submit.prevent.native :model="form">
             <el-form-item class="input-with-button">
                 <slot name="label">
                     <div class="label-text label">

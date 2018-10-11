@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-form :model="form" ref="identityForm">
+    <div @keyup.enter="submit('identityForm')">
+        <el-form @submit.prevent.native :model="form" ref="identityForm">
             <h3 class="identity-title bold">Identity verification</h3>
             <el-form-item
                 class="docType"
