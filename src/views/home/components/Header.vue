@@ -26,7 +26,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
@@ -49,7 +49,7 @@ export default {
             right: 0
             margin: 0 auto
             background: #FFFFFF
-            box-shadow: 2px 4px 4px 0 rgba(220,220,220,0.50)
+            box-shadow: 2px 2px 7px 0 rgba(220,220,220,0.50)
         .title
             text-align: center
             font-size: 24px
