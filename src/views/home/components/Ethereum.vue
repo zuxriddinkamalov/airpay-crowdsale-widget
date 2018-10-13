@@ -40,7 +40,7 @@
                     <slot name="label">
                         <div class="uppercase label">Check your email and enter code</div>
                     </slot>
-                    <el-input type="number" placeholder="Verification code" v-model="form.code">
+                    <el-input pattern="\d*" type="number" placeholder="Verification code" v-model="form.code">
                         <el-button
                             @click="enterToSystem('recForm')"
                             class="input-button"
