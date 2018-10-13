@@ -10,7 +10,7 @@
         <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
               prop="pledge">
-                <slot name="label"><div class="uppercase label">You pledge</div></slot>
+                <slot name="label"><div class="uppercase label">You pladge</div></slot>
                 <el-input min="1" type="number" v-model="form.pledge">
                     <el-select class="currency" v-model="form.currency" slot="append">
                         <el-option label="BTC" value="btc"></el-option>
@@ -62,28 +62,12 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-import { prop, path, map } from 'ramda';
+import { path, map } from 'ramda';
 import { mapState } from 'vuex';
-
-import VTextSlider from '@/components/TextSlider';
-import {
-  BY_TOKENS_MUTATION,
-  PERFORM_BUYING_MUTATION
-} from '../../../graphql/airpay/mutations';
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types';
+import '@/plugins/vue-swimline';
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
 import { prepareValidateErrors } from '../../../helpers/general';
-=======
-import { path, map } from 'ramda'
-import { mapState } from 'vuex'
-
-import '@/plugins/vue-swimline'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
->>>>>>> b2e8870eb208538e6fde3cb175dd077657c5f8fe
-
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
 const SLIDER = [
   {
     flag: 'images/flag-usa.png',
@@ -110,7 +94,6 @@ const SLIDER = [
     currency: 'BTC'
   }
 ];
-
 export default {
   name: 'ByTokens',
   data: function() {
@@ -124,109 +107,39 @@ export default {
       }
     };
     return {
-<<<<<<< HEAD
-      loading: false,
-      sliderText: map(
-        item =>
-          `<img class="flag" src="${item.flag}" alt="" />
-        User from <span class="bold">${
-          item.country
-        }</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
-        SLIDER
-      ),
-=======
->>>>>>> b2e8870eb208538e6fde3cb175dd077657c5f8fe
       form: {
         pledge: null,
         currency: 'btc'
       },
       rulesByToken: {
         pledge: [
-<<<<<<< HEAD
           {
             validator: checkZero,
             message: 'Amount can not be less then one',
             trigger: 'blur'
           }
-        ],
-        email: [
-          { required: true, message: 'Email required', trigger: 'blur' },
-          {
-            type: 'email',
-            message: 'Please enter valid email',
-            trigger: 'blur'
-          }
-=======
-          { validator: checkZero, message: 'Amount can not be less then one', trigger: 'blur' }
->>>>>>> b2e8870eb208538e6fde3cb175dd077657c5f8fe
         ]
       }
     };
   },
-<<<<<<< HEAD
-  created() {
-    // console.warn(this.$store.state)
-  },
-  methods: {
-    getSumm: function(rate) {
-      let price = parseFloat(prop('pledge', this.form)) * rate;
+  filters: {
+    money: function(price) {
       if (price) {
-        let val = price.toFixed(0);
+        let val = parseInt(price);
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }
       return '0';
-    },
-    getRate: function(rate) {
-      return rate.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
-    submit: function() {
-      if (prop('hash', this.airpay)) {
-        this.verificate('verificateForm');
-      } else {
-        this.buyTokens('buyTokenForm');
-      }
-    },
-    buyTokens(formName) {
-      this.$refs[formName].validate((valid, error) => {
-        if (valid) {
-          this.loading = true;
-          this.$apollo
-            .mutate({
-              mutation: BY_TOKENS_MUTATION,
-              variables: {
-                email: this.form.email
-              }
-            })
-            .then(response => {
-              this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-                ...this.$store.state.airpay,
-                hash: path(['data', 'enter'], response)
-              });
-              this.loading = false;
-            })
-            .catch(response => {
-              this.loading = false;
-            });
-=======
-  filters: {
-    money: function (price) {
-      if (price) {
-        let val = parseInt(price)
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      }
-      return '0'
     }
   },
   methods: {
-    submit: function (formName) {
+    submit: function(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
             ...this.$store.state.form,
             byTokenForm: this.form
-          })
-          this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
->>>>>>> b2e8870eb208538e6fde3cb175dd077657c5f8fe
+          });
+          this.$store.commit(SET_GENERAL_DATA, 'VEthereum');
         } else {
           let message = prepareValidateErrors(error);
           this.$message({
@@ -236,92 +149,33 @@ export default {
           });
           return false;
         }
-<<<<<<< HEAD
-      });
-    },
-    verificate(formName) {
-      let self = this;
-      let enter = new Promise(function(resolve, reject) {
-        self.$refs['buyTokenForm'].validate((valid, error) => {
-          if (valid) {
-            resolve();
-          } else {
-            let message = prepareValidateErrors(error);
-            self.$message({
-              dangerouslyUseHTMLString: true,
-              type: 'error',
-              message: message
-            });
-          }
-        });
-      });
-      let verification = new Promise(function(resolve, reject) {
-        self.$refs[formName].validate((valid, error) => {
-          if (valid) {
-            resolve();
-          }
-        });
-      });
-      Promise.all([enter, verification]).then(function() {
-        self.loading = true;
-        self.$apollo
-          .mutate({
-            mutation: PERFORM_BUYING_MUTATION,
-            variables: {
-              hash: prop('hash', self.airpay),
-              code: '1111',
-              amount: self.form.pledge,
-              currency: self.form.currency
-            }
-          })
-          .then(response => {
-            let data = path(['data', 'buyTokens'], response);
-            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...self.$store.state.airpay,
-              byTokenData: data
-            });
-            sessionStorage.setItem('token', prop('authorization', data));
-            self.$store.commit(SET_GENERAL_DATA, 'VDeposit');
-            self.loading = false;
-          })
-          .catch(response => {
-            self.loading = false;
-          });
       });
     }
   },
   computed: {
-    ...mapState(['airpay'])
-  },
-  components: {
-    VTextSlider
-=======
-      })
-    }
-  },
-  computed: {
-    ...mapState([
-      'airpay'
-    ]),
-    sliderText: function () {
-      return map(item =>
-        `<img class="flag" src="${item.flag}" alt="" />
-        User from <span class="bold">${item.country}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`
-        , SLIDER)
+    ...mapState(['airpay']),
+    sliderText: function() {
+      return map(
+        item =>
+          `<img class="flag" src="${item.flag}" alt="" />
+        User from <span class="bold">${
+          item.country
+        }</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
+        SLIDER
+      );
     },
-    getSum: function () {
-      let rate
+    getSum: function() {
+      let rate;
       switch (this.form.currency) {
         case 'btc':
-          rate = path(['settings', 'rateBTC'], this.airpay)
-          break
+          rate = path(['settings', 'rateBTC'], this.airpay);
+          break;
         case 'eth':
-          rate = path(['settings', 'rateETH'], this.airpay)
-          break
+          rate = path(['settings', 'rateETH'], this.airpay);
+          break;
       }
-      return parseFloat(rate) * parseFloat(this.form.pledge)
+      return parseFloat(rate) * parseFloat(this.form.pledge);
     }
->>>>>>> b2e8870eb208538e6fde3cb175dd077657c5f8fe
   }
 };
 </script>
