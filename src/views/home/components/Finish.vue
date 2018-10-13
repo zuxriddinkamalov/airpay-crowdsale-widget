@@ -1,9 +1,9 @@
 <template>
     <div>
         <div class="success-finish"><i class="el-icon-check"></i></div>
-        <h2 class="success-title">Token withdraw in proccess</h2>
+        <h2 class="success-title">Wait confirmation</h2>
         <div class="label center finish-description">Verification proccess make take up to 24 hours and you will notify about status</div>
-        <el-row :gutter="15">
+        <!--<el-row :gutter="15">
             <el-col :xs="24" :sm="12">
                 <span class="label uppercase">Share with friends, to make our token popular:</span>
             </el-col>
@@ -20,7 +20,7 @@
                     </li>
                 </ul>
             </el-col>
-        </el-row>
+        </el-row>-->
     </div>
 </template>
 
@@ -53,7 +53,7 @@ export default {
         font-size: 14px
         letter-spacing: 0.5px
         line-height: 1.4
-        margin: 20px auto 50px
+        margin: 20px auto
         max-width: 400px
     .share
         text-align: right

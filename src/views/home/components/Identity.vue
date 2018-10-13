@@ -45,7 +45,9 @@
                                         class="upload-button"
                                         v-if="!form.selfie"
                                         slot="trigger"
-                                        size="small" round>+ Selfie photo</el-button>
+                                        size="small" round>
+                                        <span class="icon"><i class="el-icon-plus"></i></span> Selfie photo
+                                    </el-button>
                                     <el-button
                                         class="clear-file"
                                         @click.prevent="clearFile('selfie')"
@@ -79,7 +81,9 @@
                                         class="upload-button"
                                         v-if="!form.front"
                                         slot="trigger"
-                                        size="small" round>+ Front photo</el-button>
+                                        size="small" round>
+                                        <span class="icon"><i class="el-icon-plus"></i></span> Selfie photo
+                                    </el-button>
                                     <el-button
                                         class="clear-file"
                                         @click.prevent="clearFile('front')"
@@ -132,7 +136,8 @@ export default {
             mutation: UPLOAD_DOC_MUTATION,
             variables: {
               selfie: prop('selfie', this.form),
-              front: prop('front', this.form)
+              front: prop('front', this.form),
+              docType: prop('docType', this.form)
             }
           }).then(response => {
             /* let data = path(['data', 'buyTokens'], response)
@@ -190,6 +195,13 @@ export default {
         background-repeat: no-repeat
         height: 160px
         padding: 10px
+        .upload-button
+            padding: 5px 15px
+            font-size: 16px
+            .icon
+                font-size: 20px
+                i
+                    vertical-align: middle
         &>div
             position: relative
         .el-upload

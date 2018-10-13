@@ -47,6 +47,6 @@ export const WITHDRAW_TOKENS_MUTATION = gql`
   }`
 
 export const UPLOAD_DOC_MUTATION = gql`
-  mutation ($selfie: Upload!, $front: Upload!) {
-    uploadDoc (selfie: $selfie, front: $front)
+  mutation ($selfie: Upload!, $front: Upload!, $docType: String!) {
+    uploadDoc (selfie: $selfie, front: $front, docType: $docType)
   }`
