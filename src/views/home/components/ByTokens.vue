@@ -212,6 +212,7 @@ export default {
             letter-spacing: 1px
             display: inline-block
             padding: 5px
+            border-radius: 3px
             border: 1px solid #889EC7
             color: #889EC7
 </style>
