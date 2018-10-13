@@ -13,8 +13,9 @@
                 <slot name="label"><div class="uppercase label">You pledge</div></slot>
                 <el-input min="1" type="number" v-model="form.pledge">
                     <el-select class="currency" v-model="form.currency" slot="append">
+                       <el-option label="ETH" value="eth"></el-option>
                         <el-option label="BTC" value="btc"></el-option>
-                        <el-option label="ETH" value="eth"></el-option>
+
                     </el-select>
                 </el-input>
             </el-form-item>
@@ -109,7 +110,7 @@ export default {
     return {
       form: {
         pledge: null,
-        currency: 'btc'
+        currency: 'eth'
       },
       rulesByToken: {
         pledge: [

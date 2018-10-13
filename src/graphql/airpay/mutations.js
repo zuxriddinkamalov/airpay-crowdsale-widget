@@ -2,8 +2,8 @@ import gql from 'graphql-tag';
 
 //  Enter
 export const ENTER_MUTATION = gql`
-  mutation($email: String!) {
-    enter(email: $email)
+  mutation($email: String!, $businessId: String!) {
+    enter(email: $email, business: $businessId)
   }
 `;
 
@@ -19,6 +19,7 @@ export const SETTINGS_MUTATION = gql`
       agreement
       mode
       symbol
+      businessId
     }
   }
 `;
