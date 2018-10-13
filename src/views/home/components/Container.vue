@@ -6,7 +6,7 @@
                 :title="$R.path(['settings', 'name'], settings)"
             />
             <el-main class="main">
-                <el-steps v-if="getStep!=1" :active="getStep" class="step">
+                <el-steps :active="getStep" class="step">
                     <el-step></el-step>
                     <el-step></el-step>
                     <el-step></el-step>
@@ -23,20 +23,22 @@ import {
   forEach,
   range,
   findIndex } from 'ramda'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
-import { getRGB } from '../../../helpers/colors'
+import { hexToRGBA } from '../../../helpers/colors'
 import VHeader from './Header'
 
 import ByTokens from './ByTokens'
-import VDeposit from './Deposit'
 import VEthereum from './Ethereum'
+import VAgree from './Agreement'
+import VDeposit from './Deposit'
 import VIdentity from './Identity'
 import VFinish from './Finish'
 
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { prepareGraphQLErrors, prepareNetworkErrors } from '../../../helpers/general'
 
-const STEPS = ['ByTokens', 'VDeposit', 'VEthereum']
+const STEPS = ['ByTokens', 'VEthereum', 'VDeposit']
 
 export default {
   name: 'Container',
@@ -51,31 +53,52 @@ export default {
     this.$store.commit(SET_GENERAL_DATA, 'ByTokens')
   },
   updated () {
-    let baseColor = path(['settings', 'color'], this.settings)
-    document.body.style.background = getRGB(baseColor, 0.1)
+    let baseColor = path(['route', 'query', 'color'], this.$store.state)
+    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state)
+    document.body.style.background = hexToRGBA(bgColor, 0.1)
     let buttons = document.getElementsByClassName('button')
     forEach(index => {
-      buttons.item(index).style.boxShadow = '0 4px 7px 0 ' + getRGB(baseColor, 0.47)
+      buttons.item(index).style.boxShadow = '0 4px 7px 0 ' + hexToRGBA(baseColor, 0.47)
     }, range(0, buttons.length))
   },
   computed: {
     ...mapState([
       'component'
     ]),
+    ...mapGetters([
+      'networkError',
+      'graphQLError'
+    ]),
     getStep () {
       let active = this.component
       let index = findIndex(step => step === active, STEPS) + 1
-      if (!index) {
-        return 3
-      }
-      return index
+      return index || 3
+    }
+  },
+  watch: {
+    networkError (newValue, oldValue) {
+      let message = prepareNetworkErrors(newValue)
+      this.$message({
+        dangerouslyUseHTMLString: true,
+        type: 'error',
+        message: message
+      })
+    },
+    graphQLError (newValue, oldValue) {
+      let message = prepareGraphQLErrors(newValue)
+      this.$message({
+        dangerouslyUseHTMLString: true,
+        type: 'error',
+        message: message
+      })
     }
   },
   components: {
     VHeader,
     ByTokens,
-    VDeposit,
     VEthereum,
+    VAgree,
+    VDeposit,
     VIdentity,
     VFinish
   }
@@ -150,6 +173,7 @@ export default {
         width: 100%
         .container
             max-width: 500px
+            margin: auto
             background: #fff
             box-shadow: 0 4px 14px 0 rgba(0,0,0,0.06)
             border-radius: 5px

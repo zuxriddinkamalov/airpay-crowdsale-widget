@@ -1,5 +1,5 @@
 <template>
-    <div @keyup.enter="withdraw">
+    <div @keyup.enter="paymentDone">
         <el-form @submit.prevent.native :model="form">
             <el-form-item class="input-with-button">
                 <slot name="label">
@@ -32,7 +32,7 @@
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">Time for transaction</div></slot>
                         <div class="timer">
-                            <CountDownTimer :minute="1" />
+                            <CountDownTimer :minute="5" />
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -44,10 +44,9 @@
                 </el-row>
             </el-form-item>
             <el-button
-                :disabled="loading"
                 class="button" type="primary"
-                @click="withdraw">
-                Done! Go to withdraw tokens
+                @click="paymentDone">
+                Payment done!
             </el-button>
         </el-form>
     </div>
@@ -58,14 +57,12 @@ import { mapState } from 'vuex'
 import { path } from 'ramda'
 
 import CountDownTimer from '@/components/CountDownTimer'
-import { WITHDRAW_TOKENS_MUTATION } from '../../../graphql/airpay/mutations'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Deposit',
   data: function () {
     return {
-      loading: false,
       form: {
         address: ''
       }
@@ -78,24 +75,13 @@ export default {
         type: 'success'
       })
     },
-    withdraw: function () {
-      this.loading = true
-      this.$apollo.mutate({
-        mutation: WITHDRAW_TOKENS_MUTATION,
-        variables: {
-          address: path(['byTokenData', 'address'], this.airpay)
-        }
-      }).then(response => {
-        /* let data = path(['data', 'buyTokens'], response)
-        self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-          ...self.$store.state.airpay,
-          byTokenData: data
-        }) */
-        this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
-        this.loading = false
-      }).catch(response => {
-        this.loading = false
-      })
+    paymentDone: function () {
+      let isVerified = path(['authData', 'isVerified'], this.airpay)
+      if (isVerified) {
+        this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+      } else {
+        this.$store.commit(SET_GENERAL_DATA, 'VIdentity')
+      }
     }
   },
   computed: {

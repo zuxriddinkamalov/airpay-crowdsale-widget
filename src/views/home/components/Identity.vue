@@ -17,59 +17,84 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <div>
-                <h3 class="label uppercase">Please take end upload photos with your id card</h3>
-                <div class="photos">
-                    <el-row :gutter="15">
-                        <el-col class="id-card" :xs="24" :sm="12">
-                            <el-form-item
-                                prop="selfie"
-                                :rules="[
-                                { required: true, message: 'Please select selfie file', trigger: 'blur' },
-                            ]">
-                                <div class="upload" :style="{
-                                    backgroundImage: 'url(images/pass.png)'
-                                }">
-                                    <el-upload
-                                        action="#"
-                                        :limit="1"
-                                        :show-file-list="false"
-                                        :on-change="(file, fileList) => selectFile(file, fileList, 'selfie')"
-                                        :auto-upload="false">
-                                        <el-button slot="trigger" size="small" round>Upload selfie with your ID Card</el-button>
-                                    </el-upload>
-                                </div>
-                            </el-form-item>
-                        </el-col>
-                        <el-col class="id-card-detail" :xs="24" :sm="12">
-                            <el-form-item
-                                prop="front"
-                                :rules="[
-                                { required: true, message: 'Please select front file', trigger: 'blur' },
-                            ]">
-                                <div class="upload" :style="{
-                                    backgroundImage: 'url(images/inhand.png)'
-                                }">
-                                    <el-upload
-                                        action="#"
-                                        :limit="1"
-                                        :show-file-list="false"
-                                        :on-change="(file, fileList) => selectFile(file, fileList, 'front')"
-                                        :auto-upload="false">
-                                        <el-button size="small" round>Upload your ID Card in detail view</el-button>
-                                    </el-upload>
-                                </div>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </div>
-            </div>
             <el-form-item>
                 <div class="info-tooltip">
                     <span class="uppercase bold">Requirements</span> Please upload only high quality photos for
                     quickest and lightness identity verification proccess
                 </div>
             </el-form-item>
+            <div class="photos">
+                <el-row :gutter="15">
+                    <el-col class="id-card" :xs="24" :sm="12">
+                        <el-form-item
+                            prop="selfie"
+                            :rules="[
+                            { required: true, message: 'Please select selfie file', trigger: 'blur' },
+                        ]">
+                            <div class="upload" :style="{
+                                backgroundImage: 'url(images/pass.png)'
+                            }">
+                                <el-upload
+                                    action="#"
+                                    ref="selfie"
+                                    :limit="1"
+                                    :show-file-list="false"
+                                    :on-change="(file, fileList) => selectFile(file, fileList, 'selfie')"
+                                    :auto-upload="false">
+                                    <el-button
+                                        class="upload-button"
+                                        v-if="!form.selfie"
+                                        slot="trigger"
+                                        size="small" round>+ Selfie photo</el-button>
+                                    <el-button
+                                        class="clear-file"
+                                        @click.prevent="clearFile('selfie')"
+                                        v-else slot="tip"
+                                        size="small" round>
+                                        <span class="icon"><i class="el-icon-check"></i></span>
+                                        {{ $R.prop('name', form.selfie) }}
+                                        <span class="icon"><i class="el-icon-close"></i></span>
+                                    </el-button>
+                                </el-upload>
+                            </div>
+                        </el-form-item>
+                    </el-col>
+                    <el-col class="id-card-detail" :xs="24" :sm="12">
+                        <el-form-item
+                            prop="front"
+                            :rules="[
+                            { required: true, message: 'Please select front file', trigger: 'blur' },
+                        ]">
+                            <div class="upload" :style="{
+                                backgroundImage: 'url(images/inhand.png)'
+                            }">
+                                <el-upload
+                                    action="#"
+                                    ref="front"
+                                    :limit="1"
+                                    :show-file-list="false"
+                                    :on-change="(file, fileList) => selectFile(file, fileList, 'front')"
+                                    :auto-upload="false">
+                                    <el-button
+                                        class="upload-button"
+                                        v-if="!form.front"
+                                        slot="trigger"
+                                        size="small" round>+ Front photo</el-button>
+                                    <el-button
+                                        class="clear-file"
+                                        @click.prevent="clearFile('front')"
+                                        v-else slot="tip"
+                                        size="small" round>
+                                        <span class="icon"><i class="el-icon-check"></i></span>
+                                        {{ $R.prop('name', form.front) }}
+                                        <span class="icon"><i class="el-icon-close"></i></span>
+                                    </el-button>
+                                </el-upload>
+                            </div>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </div>
             <el-button
                 :disabled="loading"
                 class="button" type="primary"
@@ -103,7 +128,6 @@ export default {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.loading = true
-          // console.warn(this.form)
           this.$apollo.mutate({
             mutation: UPLOAD_DOC_MUTATION,
             variables: {
@@ -119,6 +143,8 @@ export default {
             let status = path(['data', 'uploadDoc'], response)
             if (status) {
               this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+            } else {
+              this.$message.error('Can`t upload files')
             }
             this.loading = false
           }).catch(response => {
@@ -134,6 +160,10 @@ export default {
           return false
         }
       })
+    },
+    clearFile: function (ref) {
+      this.form[ref] = null
+      this.$refs[ref].clearFiles()
     },
     selectFile: function (file, fileList, key) {
       this.form[key] = prop('raw', file)
@@ -159,11 +189,30 @@ export default {
         background-position: center center
         background-repeat: no-repeat
         height: 160px
-        text-align: center
+        padding: 10px
+        &>div
+            position: relative
+        .el-upload
+            text-align: left
+            width: 100%
         button
+            text-align: left
             background: transparent
-            border-width: 2px
-            border-color: #387EFE
+            border: 1px solid #387EFE
             color: #4686FE
             margin: 15px auto
+        .clear-file
+            width: 100%
+            color: #fff
+            background-color: #377DFE
+            position: absolute
+            left: 0
+            .icon
+                vertical-align: middle
+            .icon:first-child
+                margin-right: 10px
+                float: left
+            .icon:last-child
+                margin-left: 10px
+                float: right
 </style>

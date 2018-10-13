@@ -1,7 +1,11 @@
 <template>
-    <div @keyup.enter="submit">
-        <div class="info-tooltip">
-            <VTextSlider :data='sliderText' :interval="3" :timer="2" :infinite="true" filter="bottom-top" />
+    <div @keyup.enter="submit('buyTokenForm')">
+        <div class="info-tooltip tooltip-slider">
+            <vue-swimlane
+                :scale="0.5"
+                :transitionDelay="2000"
+                :circular="true"
+                :words="sliderText"></vue-swimlane>
         </div>
         <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
@@ -18,75 +22,53 @@
                 <el-row>
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">You get</div></slot>
-                        <h3 class="bold">
-                            <span class="summ">{{getSumm($R.path(['settings', 'rate'], airpay))}}</span>
+                        <div class="currency-info bold">
+                            <span class="summ">
+                                {{ getSum | money }}
+                            </span>
                             &nbsp;<span class="uppercase">{{$R.path(['settings', 'name'], airpay)}}</span>
-                        </h3>
+                        </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase gray label">Bonuses</div></slot>
-                        <h3>
-                            <span class="bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
-                            <!--&nbsp;<span class="period uppercase">Ends in 21 days</span>-->
-                        </h3>
+                        <div class="currency-info">
+                            <div class="bold rate uppercase">
+                                1 {{ form.currency }} =
+                                <span v-if="$R.equals(form.currency, 'eth')">
+                                    {{ $R.path(['settings', 'rateETH'], airpay) }}
+                                </span>
+                                <span v-if="$R.equals(form.currency, 'btc')">
+                                    {{ $R.path(['settings', 'rateBTC'], airpay) | money }}
+                                </span>
+                                {{ $R.path(['settings', 'name'], airpay) }}
+                            </div>
+                            <div v-if="$R.path(['settings', 'bonus'], airpay)" class="bonus uppercase">
+                                Include bonus <span class="percent bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
+                            </div>
+                        </div>
                     </el-col>
                 </el-row>
             </el-form-item>
-            <el-form-item
-              class="email"
-              prop="email">
-                <slot name="label"><div class="uppercase label">Please enter your email</div></slot>
-                <el-input placeholder="Please enter email" type="email" v-model="form.email"></el-input>
-            </el-form-item>
 
-            <div v-if="!$R.prop('hash', airpay)" class="">
+            <div class="">
                 <el-button
-                    :disabled="loading"
                     class="button" type="primary"
-                    @click="buyTokens('buyTokenForm')">
+                    @click="submit('buyTokenForm')">
                     Buy tokens
                 </el-button>
             </div>
         </el-form>
-        <div v-if="$R.prop('hash', airpay)" class="verification">
-            <el-form @submit.prevent.native ref="verificateForm" :model="form">
-                <el-form-item
-                    class="code input-with-button"
-                    prop="code"
-                    :rules="[
-                    { required: true, message: 'Please enter verification code 4 digits', trigger: 'blur' },
-                ]">
-                    <slot name="label">
-                        <div class="uppercase label">Check your email and enter code</div>
-                    </slot>
-                    <el-input placeholder="Verification code" v-model="form.code">
-                        <el-button
-                           @click="buyTokens('buyTokenForm')"
-                           class="input-button"
-                           slot="append"
-                           type="text">Resend</el-button>
-                    </el-input>
-                </el-form-item>
-                <el-button
-                    :disabled="loading"
-                    class="button" type="primary"
-                    @click="verificate('verificateForm')">
-                    Buy tokens
-                </el-button>
-            </el-form>
-        </div>
     </div>
 </template>
 
 <script>
-import { prop, path, map } from 'ramda'
+import { path, map } from 'ramda'
 import { mapState } from 'vuex'
 
-import VTextSlider from '@/components/TextSlider'
-import { BY_TOKENS_MUTATION, PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
+import '@/plugins/vue-swimline'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
 
 const SLIDER = [
   {
@@ -128,66 +110,35 @@ export default {
       }
     }
     return {
-      loading: false,
-      sliderText: map(item =>
-        `<img class="flag" src="${item.flag}" alt="" />
-        User from <span class="bold">${item.country}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`
-        , SLIDER),
       form: {
         pledge: null,
-        email: '',
-        verificationCode: '',
-        currency: 'btc',
-        hash: ''
+        currency: 'btc'
       },
       rulesByToken: {
         pledge: [
           { validator: checkZero, message: 'Amount can not be less then one', trigger: 'blur' }
-        ],
-        email: [
-          { required: true, message: 'Email required', trigger: 'blur' },
-          { type: 'email', message: 'Please enter valid email', trigger: 'blur' }
         ]
       }
     }
   },
-  created () {
-    // console.warn(this.$store.state)
-  },
-  methods: {
-    getSumm: function (rate) {
-      let price = parseFloat(prop('pledge', this.form)) * rate
+  filters: {
+    money: function (price) {
       if (price) {
-        let val = (price).toFixed(0)
+        let val = parseInt(price)
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       }
       return '0'
-    },
-    submit: function () {
-      if (prop('hash', this.airpay)) {
-        this.verificate('verificateForm')
-      } else {
-        this.buyTokens('buyTokenForm')
-      }
-    },
-    buyTokens (formName) {
+    }
+  },
+  methods: {
+    submit: function (formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.loading = true
-          this.$apollo.mutate({
-            mutation: BY_TOKENS_MUTATION,
-            variables: {
-              email: this.form.email
-            }
-          }).then(response => {
-            this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...this.$store.state.airpay,
-              hash: path(['data', 'enter'], response)
-            })
-            this.loading = false
-          }).catch(response => {
-            this.loading = false
+          this.$store.commit(`forms/${SET_FORM_DATA}`, {
+            ...this.$store.state.form,
+            byTokenForm: this.form
           })
+          this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
@@ -198,64 +149,30 @@ export default {
           return false
         }
       })
-    },
-    verificate (formName) {
-      let self = this
-      let enter = new Promise(function (resolve, reject) {
-        self.$refs['buyTokenForm'].validate(
-          (valid, error) => {
-            if (valid) {
-              resolve()
-            } else {
-              let message = prepareValidateErrors(error)
-              self.$message({
-                dangerouslyUseHTMLString: true,
-                type: 'error',
-                message: message
-              })
-            }
-          }
-        )
-      })
-      let verification = new Promise(function (resolve, reject) {
-        self.$refs[formName].validate((valid, error) => {
-          if (valid) {
-            resolve()
-          }
-        })
-      })
-      Promise.all([enter, verification]).then(function () {
-        self.loading = true
-        self.$apollo.mutate({
-          mutation: PERFORM_BUYING_MUTATION,
-          variables: {
-            hash: prop('hash', self.airpay),
-            code: '1111',
-            amount: self.form.pledge,
-            currency: self.form.currency
-          }
-        }).then(response => {
-          let data = path(['data', 'buyTokens'], response)
-          self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-            ...self.$store.state.airpay,
-            byTokenData: data
-          })
-          sessionStorage.setItem('token', prop('authorization', data))
-          self.$store.commit(SET_GENERAL_DATA, 'VDeposit')
-          self.loading = false
-        }).catch(response => {
-          self.loading = false
-        })
-      })
     }
   },
   computed: {
     ...mapState([
       'airpay'
-    ])
-  },
-  components: {
-    VTextSlider
+    ]),
+    sliderText: function () {
+      return map(item =>
+        `<img class="flag" src="${item.flag}" alt="" />
+        User from <span class="bold">${item.country}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`
+        , SLIDER)
+    },
+    getSum: function () {
+      let rate
+      switch (this.form.currency) {
+        case 'btc':
+          rate = path(['settings', 'rateBTC'], this.airpay)
+          break
+        case 'eth':
+          rate = path(['settings', 'rateETH'], this.airpay)
+          break
+      }
+      return parseFloat(rate) * parseFloat(this.form.pledge)
+    }
   }
 }
 </script>
@@ -275,18 +192,23 @@ export default {
     .pledge, .verification, .email
         .currency
             width: 90px
+    .tooltip-slider ul li
+        text-align: left
     .pledge-sum
         color: #313131
         word-break: break-word
-        & h3, .summ
+        .rate
+            font-size: 18px
+        & .currency-info, .summ
             color: #000
             line-height: 1
             letter-spacing: 2px
             font-size: 22px
-        .period
-            vertical-align: middle
+        .bonus
             font-size: 11px
+            letter-spacing: 1px
+            display: inline-block
             padding: 5px
-            border: 1px solid #CDD6E9
-            color: #CDD6E9
+            border: 1px solid #889EC7
+            color: #889EC7
 </style>

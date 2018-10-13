@@ -1,29 +1,40 @@
 import gql from 'graphql-tag'
 
-//  By token
-export const BY_TOKENS_MUTATION = gql`
-  mutation($email: String!) {
-    enter(email: $email)    
+//  Enter
+export const ENTER_MUTATION = gql`
+  mutation ($email: String!) {
+    enter (email: $email)    
   }`
 
 //  Get widget settings
 export const SETTINGS_MUTATION = gql`
-  query {
-    initCrowdsale {
-      name
+  query ($id: String!) {
+    initCrowdsale (id: $id) {
       logo
-      rate
+      name
+      rateBTC
+      rateETH
       bonus
-      color
+      agreement
+      mode
     }
   }`
 
+// Authorization
+export const AUTHORIZATION_MUTATION = gql`
+  mutation ($hash: String!, $code: Int!) {
+    auth (hash: $hash, code: $code) {
+      authorization
+      isVerified
+    }
+  }
+`
+
 // Perform buying
 export const PERFORM_BUYING_MUTATION = gql`
-  mutation($hash: String!, $code: Int!, $amount: Float!, $currency: String!) {
-    buyTokens(hash: $hash, code: $code, amount: $amount, currency: $currency)
+  mutation ($amount: Float!, $currency: String!, $withdrawAddress: String!, $crowdsale: ID!) {
+    buyTokens (amount: $amount, currency: $currency, withdrawAddress: $withdrawAddress, crowdsale: $crowdsale)
     {
-      authorization
       address
       amount
       currency
@@ -31,11 +42,11 @@ export const PERFORM_BUYING_MUTATION = gql`
   }`
 
 export const WITHDRAW_TOKENS_MUTATION = gql`
-  mutation($address: String!) {
+  mutation ($address: String!) {
     withdrawTokens(address: $address)
   }`
 
 export const UPLOAD_DOC_MUTATION = gql`
-  mutation($selfie: Upload!, $front: Upload!) {
-    uploadDoc(selfie: $selfie, front: $front)
+  mutation ($selfie: Upload!, $front: Upload!) {
+    uploadDoc (selfie: $selfie, front: $front)
   }`

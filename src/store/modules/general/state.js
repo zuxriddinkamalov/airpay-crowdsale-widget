@@ -6,5 +6,7 @@
  */
 
 export default {
-  component: ''
+  component: '',
+  networkError: null,
+  graphQLError: null
 }
