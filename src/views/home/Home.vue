@@ -6,6 +6,7 @@
     element-loading-background="rgba(0, 0, 0, 0.8)"
     v-loading.fullscreen="airpay.loading">
     <el-main
+      class="home"
       v-if="!airpay.loading">
       <v-container v-if="airpay.settings" :settings="airpay" />
     </el-main>
@@ -35,5 +36,8 @@ export default {
   .main-container {
     height: 100%;
     width: 100%;
+  }
+  .home {
+    padding: 50px
   }
 </style>

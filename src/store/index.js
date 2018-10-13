@@ -12,6 +12,7 @@ import createLogger from 'vuex/dist/logger'
 
 // Modules
 import airpay from './modules/airpay'
+import forms from './modules/forms'
 import general from './modules/general'
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -23,7 +24,8 @@ export default new Vuex.Store({
    */
 
   modules: {
-    airpay
+    airpay,
+    forms
   },
 
   /**

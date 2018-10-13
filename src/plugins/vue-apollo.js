@@ -9,12 +9,12 @@
 
 import Vue from 'vue'
 import { ApolloClient } from 'apollo-client'
-// import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
-import { setContext } from 'apollo-link-context'
 import { createUploadLink } from 'apollo-upload-client'
-// import { onError } from 'apollo-link-error'
+import { onError } from 'apollo-link-error'
+import { ApolloLink, from } from 'apollo-link'
+import Store from '@/store'
 
 import { API_URL } from '@/constant/api'
 
@@ -23,26 +23,32 @@ const httpLink = new createUploadLink({
   uri: API_URL
 })
 
-/* const checkError = onError(({ graphQLErrors, networkError }) => {
-  // window.location.reload()
-  console.warn(networkError)
-}) */
+const checkError = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    Store.dispatch('graphQLError', graphQLErrors)
+  }
+  if (networkError) {
+    Store.dispatch('networkError', networkError)
+  }
+})
 
-const authLink = setContext((_, { headers }) => {
-  // get the authentication token from session storage if it exists
+const authLink = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
   const token = sessionStorage.getItem('token')
-  // return the headers to the context so httpLink can read them
-  return {
+
+  operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
       authorization: token || ''
     }
-  }
+  }))
+
+  return forward(operation)
 })
 
 // Create the apollo client
 const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([checkError, authLink, httpLink]),
   cache: new InMemoryCache(),
   connectToDevTools: true
 })

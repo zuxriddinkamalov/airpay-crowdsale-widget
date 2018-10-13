@@ -30,14 +30,14 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.validate-error-header {
+.error-header {
   font-weight: bold;
   line-height: 1.8
 }
-.validate-error-list {
+.error-list {
   line-height: 1.4;
   list-style: circle
 }
-.validate-error {
+.error-item {
   margin-left: 15px
 }

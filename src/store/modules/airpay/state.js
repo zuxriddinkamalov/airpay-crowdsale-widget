@@ -9,5 +9,6 @@ export default {
   settings: null,
   loading: false,
   hash: null,
-  byTokenData: null
+  byTokenData: null,
+  authData: null
 }

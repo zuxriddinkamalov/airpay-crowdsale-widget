@@ -11,13 +11,18 @@
 <script>
 import { SETTINGS_MUTATION } from '@/graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '@/store/modules/airpay/mutation-types'
-import { prop } from 'ramda'
+import { prop, path } from 'ramda'
 
 export default {
   name: 'App',
   apollo: {
     settings: {
       query: SETTINGS_MUTATION,
+      variables () {
+        return {
+          id: path(['route', 'query', 'crowdsale'], this.$store.state)
+        }
+      },
       update (response) {
         const data = prop('initCrowdsale', response)
         this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
@@ -45,7 +50,7 @@ export default {
 </script>
 
 <style>
-   html, body, #app {
+  html, body, #app {
     width: 100%;
     height: 100%;
   }

@@ -27,10 +27,12 @@
     "vue": "^2.5.17",
     "vue-apollo": "^3.0.0-beta.25",
     "vue-clipboard2": "^0.2.1",
+    "vue-loading-spinner": "^1.0.11",
     "vue-qriously": "^1.1.1",
     "vue-ramda": "^1.0.0",
     "vue-router": "^3.0.1",
     "vue-rx": "^6.0.1",
+    "vue-swimlane": "^0.3.8",
     "vuex": "^3.0.1",
     "vuex-router-sync": "^5.0.0"
   },
