@@ -10,11 +10,12 @@
         <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
               prop="pledge">
-                <slot name="label"><div class="uppercase label">You pladge</div></slot>
+                <slot name="label"><div class="uppercase label">You pledge</div></slot>
                 <el-input min="1" type="number" v-model="form.pledge">
                     <el-select class="currency" v-model="form.currency" slot="append">
+                       <el-option label="ETH" value="eth"></el-option>
                         <el-option label="BTC" value="btc"></el-option>
-                        <el-option label="ETH" value="eth"></el-option>
+
                     </el-select>
                 </el-input>
             </el-form-item>
@@ -26,7 +27,7 @@
                             <span class="summ">
                                 {{ getSum | money }}
                             </span>
-                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'name'], airpay)}}</span>
+                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'symbol'], airpay)}}</span>
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -40,7 +41,7 @@
                                 <span v-if="$R.equals(form.currency, 'btc')">
                                     {{ $R.path(['settings', 'rateBTC'], airpay) | money }}
                                 </span>
-                                {{ $R.path(['settings', 'name'], airpay) }}
+                                {{ $R.path(['settings', 'symbol'], airpay) }}
                             </div>
                             <div v-if="$R.path(['settings', 'bonus'], airpay)" class="bonus uppercase">
                                 Include bonus <span class="percent bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
@@ -62,14 +63,12 @@
 </template>
 
 <script>
-import { path, map } from 'ramda'
-import { mapState } from 'vuex'
-
-import '@/plugins/vue-swimline'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
-
+import { path, map } from 'ramda';
+import { mapState } from 'vuex';
+import '@/plugins/vue-swimline';
+import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
+import { prepareValidateErrors } from '../../../helpers/general';
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
 const SLIDER = [
   {
     flag: 'images/flag-usa.png',
@@ -95,86 +94,91 @@ const SLIDER = [
     sum: 4.9,
     currency: 'BTC'
   }
-]
-
+];
 export default {
   name: 'ByTokens',
-  data: function () {
+  data: function() {
     let checkZero = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('Amount is required'))
+        callback(new Error('Amount is required'));
       } else if (value < 1) {
-        callback(new Error('Amount can not be less then one'))
+        callback(new Error('Amount can not be less then one'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       form: {
         pledge: null,
-        currency: 'btc'
+        currency: 'eth'
       },
       rulesByToken: {
         pledge: [
-          { validator: checkZero, message: 'Amount can not be less then one', trigger: 'blur' }
+          {
+            validator: checkZero,
+            message: 'Amount can not be less then one',
+            trigger: 'blur'
+          }
         ]
       }
-    }
+    };
   },
   filters: {
-    money: function (price) {
+    money: function(price) {
       if (price) {
-        let val = parseInt(price)
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        let val = parseInt(price);
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }
-      return '0'
+      return '0';
     }
   },
   methods: {
-    submit: function (formName) {
+    submit: function(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
             ...this.$store.state.form,
             byTokenForm: this.form
-          })
-          this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
+          });
+          this.$store.commit(SET_GENERAL_DATA, 'VEthereum');
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     }
   },
   computed: {
-    ...mapState([
-      'airpay'
-    ]),
-    sliderText: function () {
-      return map(item =>
-        `<img class="flag" src="${item.flag}" alt="" />
-        User from <span class="bold">${item.country}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`
-        , SLIDER)
+    ...mapState(['airpay']),
+    sliderText: function() {
+      return map(
+        item =>
+          `<img class="flag" src="${item.flag}" alt="" />
+        User from <span class="bold">${
+          item.country
+        }</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
+        SLIDER
+      );
     },
-    getSum: function () {
-      let rate
+    getSum: function() {
+      let rate;
       switch (this.form.currency) {
         case 'btc':
-          rate = path(['settings', 'rateBTC'], this.airpay)
-          break
+          rate = path(['settings', 'rateBTC'], this.airpay);
+          break;
         case 'eth':
-          rate = path(['settings', 'rateETH'], this.airpay)
-          break
+          rate = path(['settings', 'rateETH'], this.airpay);
+          break;
       }
-      return parseFloat(rate) * parseFloat(this.form.pledge)
+      return parseFloat(rate) * parseFloat(this.form.pledge);
     }
   }
-}
+};
 </script>
 
 <style lang="sass">
@@ -209,6 +213,7 @@ export default {
             letter-spacing: 1px
             display: inline-block
             padding: 5px
+            border-radius: 3px
             border: 1px solid #889EC7
             color: #889EC7
 </style>

@@ -1,15 +1,16 @@
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
 
 //  Enter
 export const ENTER_MUTATION = gql`
-  mutation ($email: String!) {
-    enter (email: $email)    
-  }`
+  mutation($email: String!, $businessId: String!) {
+    enter(email: $email, business: $businessId)
+  }
+`;
 
 //  Get widget settings
 export const SETTINGS_MUTATION = gql`
-  query ($id: String!) {
-    initCrowdsale (id: $id) {
+  query($id: String!) {
+    initCrowdsale(id: $id) {
       logo
       name
       rateBTC
@@ -17,36 +18,51 @@ export const SETTINGS_MUTATION = gql`
       bonus
       agreement
       mode
+      symbol
+      businessId
     }
-  }`
+  }
+`;
 
 // Authorization
 export const AUTHORIZATION_MUTATION = gql`
-  mutation ($hash: String!, $code: Int!) {
-    auth (hash: $hash, code: $code) {
+  mutation($hash: String!, $code: Int!) {
+    auth(hash: $hash, code: $code) {
       authorization
       isVerified
     }
   }
-`
+`;
 
 // Perform buying
 export const PERFORM_BUYING_MUTATION = gql`
-  mutation ($amount: Float!, $currency: String!, $withdrawAddress: String!, $crowdsale: ID!) {
-    buyTokens (amount: $amount, currency: $currency, withdrawAddress: $withdrawAddress, crowdsale: $crowdsale)
-    {
+  mutation(
+    $amount: Float!
+    $currency: String!
+    $withdrawAddress: String!
+    $crowdsale: ID!
+  ) {
+    buyTokens(
+      amount: $amount
+      currency: $currency
+      withdrawAddress: $withdrawAddress
+      crowdsale: $crowdsale
+    ) {
       address
       amount
       currency
     }
-  }`
+  }
+`;
 
 export const WITHDRAW_TOKENS_MUTATION = gql`
-  mutation ($address: String!) {
+  mutation($address: String!) {
     withdrawTokens(address: $address)
-  }`
+  }
+`;
 
 export const UPLOAD_DOC_MUTATION = gql`
-  mutation ($selfie: Upload!, $front: Upload!, $docType: String!) {
-    uploadDoc (selfie: $selfie, front: $front, docType: $docType)
-  }`
+  mutation($selfie: Upload!, $front: Upload!, $docType: String!) {
+    uploadDocs(selfie: $selfie, front: $front, docType: $docType)
+  }
+`;

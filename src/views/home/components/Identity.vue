@@ -110,14 +110,14 @@
 </template>
 
 <script>
-import { prop, path } from 'ramda'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
-import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
+import { prop, path } from 'ramda';
+import { prepareValidateErrors } from '../../../helpers/general';
+import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
+import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations';
 
 export default {
   name: 'Identity',
-  data: function () {
+  data: function() {
     return {
       loading: false,
       form: {
@@ -125,56 +125,60 @@ export default {
         selfie: null,
         front: null
       }
-    }
+    };
   },
   methods: {
-    submit (formName) {
+    submit(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.loading = true
-          this.$apollo.mutate({
-            mutation: UPLOAD_DOC_MUTATION,
-            variables: {
-              selfie: prop('selfie', this.form),
-              front: prop('front', this.form),
-              docType: prop('docType', this.form)
-            }
-          }).then(response => {
-            /* let data = path(['data', 'buyTokens'], response)
+          this.loading = true;
+          this.$apollo
+            .mutate({
+              mutation: UPLOAD_DOC_MUTATION,
+              variables: {
+                selfie: prop('selfie', this.form),
+                front: prop('front', this.form),
+                docType: prop('docType', this.form)
+              }
+            })
+            .then(response => {
+              /* let data = path(['data', 'buyTokens'], response)
             self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
               ...self.$store.state.airpay,
               byTokenData: data
             }) */
-            let status = path(['data', 'uploadDoc'], response)
-            if (status) {
-              this.$store.commit(SET_GENERAL_DATA, 'VFinish')
-            } else {
-              this.$message.error('Can`t upload files')
-            }
-            this.loading = false
-          }).catch(response => {
-            this.loading = false
-          })
+              console.log(response);
+              let status = path(['data', 'uploadDocs'], response);
+              if (status) {
+                this.$store.commit(SET_GENERAL_DATA, 'VFinish');
+              } else {
+                this.$message.error('Can`t upload files');
+              }
+              this.loading = false;
+            })
+            .catch(response => {
+              this.loading = false;
+            });
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     },
-    clearFile: function (ref) {
-      this.form[ref] = null
-      this.$refs[ref].clearFiles()
+    clearFile: function(ref) {
+      this.form[ref] = null;
+      this.$refs[ref].clearFiles();
     },
-    selectFile: function (file, fileList, key) {
-      this.form[key] = prop('raw', file)
+    selectFile: function(file, fileList, key) {
+      this.form[key] = prop('raw', file);
     }
   }
-}
+};
 </script>
 
 <style lang="sass">

@@ -60,27 +60,30 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { path, prop } from 'ramda'
-import { isAddress } from 'ethereum-address'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
-import { AUTHORIZATION_MUTATION, ENTER_MUTATION } from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
+import { mapState } from 'vuex';
+import { path, prop } from 'ramda';
+import { isAddress } from 'ethereum-address';
+import { prepareValidateErrors } from '../../../helpers/general';
+import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
+import {
+  AUTHORIZATION_MUTATION,
+  ENTER_MUTATION
+} from '../../../graphql/airpay/mutations';
+import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types';
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
 
 export default {
   name: 'Ethereum',
-  data: function () {
+  data: function() {
     let checkEthereum = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('Ethereum address required'))
+        callback(new Error('Ethereum address required'));
       } else if (!isAddress(value)) {
-        callback(new Error('Please enter valid ethereum address'))
+        callback(new Error('Please enter valid ethereum address'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loading: false,
       form: {
@@ -89,112 +92,117 @@ export default {
         code: ''
       },
       rulesEthereum: {
-        withDrawAddress: [
-          { validator: checkEthereum, trigger: 'blur' }
-        ],
+        withDrawAddress: [{ validator: checkEthereum, trigger: 'blur' }],
         email: [
           { required: true, message: 'Email required', trigger: 'blur' },
-          { type: 'email', message: 'Please enter valid email', trigger: 'blur' }
+          {
+            type: 'email',
+            message: 'Please enter valid email',
+            trigger: 'blur'
+          }
         ]
       }
-    }
+    };
   },
   methods: {
-    submit () {
+    submit() {
       if (prop('hash', this.airpay)) {
-        this.verificate('verificateForm')
+        this.verificate('verificateForm');
       } else {
-        this.enterToSystem('recForm')
+        this.enterToSystem('recForm');
       }
     },
-    enterToSystem (formName) {
+    enterToSystem(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.loading = true
-          this.$apollo.mutate({
-            mutation: ENTER_MUTATION,
-            variables: {
-              email: this.form.email
-            }
-          }).then(response => {
-            this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...this.$store.state.airpay,
-              hash: path(['data', 'enter'], response)
+          this.loading = true;
+          this.$apollo
+            .mutate({
+              mutation: ENTER_MUTATION,
+              variables: {
+                email: this.form.email,
+                businessId: this.$store.state.airpay.settings.businessId
+              }
             })
-            this.loading = false
-          }).catch(response => {
-            this.$message.error(response)
-            this.loading = false
-          })
+            .then(response => {
+              this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+                ...this.$store.state.airpay,
+                hash: path(['data', 'enter'], response)
+              });
+              this.loading = false;
+            })
+            .catch(response => {
+              this.$message.error(response);
+              this.loading = false;
+            });
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     },
-    verificate (formName) {
-      let self = this
-      let enter = new Promise(function (resolve, reject) {
-        self.$refs['recForm'].validate(
-          (valid, error) => {
-            if (valid) {
-              resolve()
-            } else {
-              let message = prepareValidateErrors(error)
-              self.$message({
-                dangerouslyUseHTMLString: true,
-                type: 'error',
-                message: message
-              })
-            }
+    verificate(formName) {
+      let self = this;
+      let enter = new Promise(function(resolve, reject) {
+        self.$refs['recForm'].validate((valid, error) => {
+          if (valid) {
+            resolve();
+          } else {
+            let message = prepareValidateErrors(error);
+            self.$message({
+              dangerouslyUseHTMLString: true,
+              type: 'error',
+              message: message
+            });
           }
-        )
-      })
-      let verification = new Promise(function (resolve, reject) {
+        });
+      });
+      let verification = new Promise(function(resolve, reject) {
         self.$refs[formName].validate((valid, error) => {
           if (valid) {
-            resolve()
+            resolve();
           }
-        })
-      })
-      Promise.all([enter, verification]).then(function () {
-        self.loading = true
-        self.$apollo.mutate({
-          mutation: AUTHORIZATION_MUTATION,
-          variables: {
-            hash: prop('hash', self.airpay),
-            code: prop('code', self.form)
-          }
-        }).then(response => {
-          let data = path(['data', 'auth'], response)
-          sessionStorage.setItem('token', prop('authorization', data))
-          self.$store.commit(`forms/${SET_FORM_DATA}`, {
-            ...self.$store.state.forms,
-            recipientForm: self.form
+        });
+      });
+      Promise.all([enter, verification]).then(function() {
+        self.loading = true;
+        self.$apollo
+          .mutate({
+            mutation: AUTHORIZATION_MUTATION,
+            variables: {
+              hash: prop('hash', self.airpay),
+              code: prop('code', self.form)
+            }
           })
-          self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-            ...self.$store.state.airpay,
-            authData: data
+          .then(response => {
+            let data = path(['data', 'auth'], response);
+            sessionStorage.setItem('token', prop('authorization', data));
+            self.$store.commit(`forms/${SET_FORM_DATA}`, {
+              ...self.$store.state.forms,
+              recipientForm: self.form
+            });
+            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+              ...self.$store.state.airpay,
+              authData: data
+            });
+            self.$store.commit(SET_GENERAL_DATA, 'VAgree');
+            self.loading = false;
           })
-          self.$store.commit(SET_GENERAL_DATA, 'VAgree')
-          self.loading = false
-        }).catch(response => {
-          self.loading = false
-        })
-      })
+          .catch(response => {
+            self.loading = false;
+          });
+      });
     }
   },
   computed: {
-    ...mapState([
-      'airpay'
-    ])
+    ...mapState(['airpay'])
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
