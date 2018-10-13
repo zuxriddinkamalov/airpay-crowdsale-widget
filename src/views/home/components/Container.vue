@@ -18,26 +18,26 @@
 </template>
 
 <script>
-import { path, forEach, range, findIndex } from 'ramda';
-import { mapState, mapGetters } from 'vuex';
+import { path, forEach, range, findIndex } from 'ramda'
+import { mapState, mapGetters } from 'vuex'
 
-import { hexToRGBA } from '../../../helpers/colors';
-import VHeader from './Header';
+import { hexToRGBA } from '../../../helpers/colors'
+import VHeader from './Header'
 
-import ByTokens from './ByTokens';
-import VEthereum from './Ethereum';
-import VAgree from './Agreement';
-import VDeposit from './Deposit';
-import VIdentity from './Identity';
-import VFinish from './Finish';
+import ByTokens from './ByTokens'
+import VEthereum from './Ethereum'
+import VAgree from './Agreement'
+import VDeposit from './Deposit'
+import VIdentity from './Identity'
+import VFinish from './Finish'
 
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
+import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import {
   prepareGraphQLErrors,
   prepareNetworkErrors
-} from '../../../helpers/general';
+} from '../../../helpers/general'
 
-const STEPS = ['ByTokens', 'VEthereum', 'VDeposit'];
+const STEPS = ['ByTokens', 'VEthereum', 'VDeposit']
 
 export default {
   name: 'Container',
@@ -47,45 +47,45 @@ export default {
       required: true
     }
   },
-  mounted() {
-    sessionStorage.removeItem('token');
-    this.$store.commit(SET_GENERAL_DATA, 'ByTokens');
+  mounted () {
+    sessionStorage.removeItem('token')
+    this.$store.commit(SET_GENERAL_DATA, 'ByTokens')
   },
-  updated() {
-    let baseColor = path(['route', 'query', 'color'], this.$store.state);
-    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state);
-    document.body.style.background = hexToRGBA(bgColor, 0.1);
-    let buttons = document.getElementsByClassName('button');
+  updated () {
+    let baseColor = path(['route', 'query', 'color'], this.$store.state)
+    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state)
+    document.body.style.background = hexToRGBA(bgColor, 0.1)
+    let buttons = document.getElementsByClassName('button')
     forEach(index => {
       buttons.item(index).style.boxShadow =
-        '0 4px 7px 0 ' + hexToRGBA(baseColor, 0.47);
-    }, range(0, buttons.length));
+        '0 4px 7px 0 ' + hexToRGBA(baseColor, 0.47)
+    }, range(0, buttons.length))
   },
   computed: {
     ...mapState(['component']),
     ...mapGetters(['networkError', 'graphQLError']),
-    getStep() {
-      let active = this.component;
-      let index = findIndex(step => step === active, STEPS) + 1;
-      return index || 3;
+    getStep () {
+      let active = this.component
+      let index = findIndex(step => step === active, STEPS) + 1
+      return index || 3
     }
   },
   watch: {
-    networkError(newValue, oldValue) {
-      let message = prepareNetworkErrors(newValue);
+    networkError (newValue, oldValue) {
+      let message = prepareNetworkErrors(newValue)
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      });
+      })
     },
-    graphQLError(newValue, oldValue) {
-      let message = prepareGraphQLErrors(newValue);
+    graphQLError (newValue, oldValue) {
+      let message = prepareGraphQLErrors(newValue)
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      });
+      })
     }
   },
   components: {
@@ -97,7 +97,7 @@ export default {
     VIdentity,
     VFinish
   }
-};
+}
 </script>
 
 <style lang="sass">

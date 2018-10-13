@@ -63,12 +63,12 @@
 </template>
 
 <script>
-import { path, map } from 'ramda';
-import { mapState } from 'vuex';
-import '@/plugins/vue-swimline';
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types';
-import { prepareValidateErrors } from '../../../helpers/general';
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
+import { path, map } from 'ramda'
+import { mapState } from 'vuex'
+import '@/plugins/vue-swimline'
+import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { prepareValidateErrors } from '../../../helpers/general'
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
 const SLIDER = [
   {
     flag: 'images/flag-usa.png',
@@ -94,19 +94,19 @@ const SLIDER = [
     sum: 4.9,
     currency: 'BTC'
   }
-];
+]
 export default {
   name: 'ByTokens',
-  data: function() {
+  data: function () {
     let checkZero = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('Amount is required'));
+        callback(new Error('Amount is required'))
       } else if (value < 1) {
-        callback(new Error('Amount can not be less then one'));
+        callback(new Error('Amount can not be less then one'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       form: {
         pledge: null,
@@ -121,64 +121,64 @@ export default {
           }
         ]
       }
-    };
+    }
   },
   filters: {
-    money: function(price) {
+    money: function (price) {
       if (price) {
-        let val = parseInt(price);
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        let val = parseInt(price)
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       }
-      return '0';
+      return '0'
     }
   },
   methods: {
-    submit: function(formName) {
+    submit: function (formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
             ...this.$store.state.form,
             byTokenForm: this.form
-          });
-          this.$store.commit(SET_GENERAL_DATA, 'VEthereum');
+          })
+          this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
         } else {
-          let message = prepareValidateErrors(error);
+          let message = prepareValidateErrors(error)
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          });
-          return false;
+          })
+          return false
         }
-      });
+      })
     }
   },
   computed: {
     ...mapState(['airpay']),
-    sliderText: function() {
+    sliderText: function () {
       return map(
         item =>
           `<img class="flag" src="${item.flag}" alt="" />
         User from <span class="bold">${
-          item.country
-        }</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
+  item.country
+}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
         SLIDER
-      );
+      )
     },
-    getSum: function() {
-      let rate;
+    getSum: function () {
+      let rate
       switch (this.form.currency) {
         case 'btc':
-          rate = path(['settings', 'rateBTC'], this.airpay);
-          break;
+          rate = path(['settings', 'rateBTC'], this.airpay)
+          break
         case 'eth':
-          rate = path(['settings', 'rateETH'], this.airpay);
-          break;
+          rate = path(['settings', 'rateETH'], this.airpay)
+          break
       }
-      return parseFloat(rate) * parseFloat(this.form.pledge);
+      return parseFloat(rate) * parseFloat(this.form.pledge)
     }
   }
-};
+}
 </script>
 
 <style lang="sass">

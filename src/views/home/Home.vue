@@ -16,8 +16,8 @@
 <script>
 // @ is an alias to /src
 
-import { mapState } from 'vuex';
-import VContainer from './components/Container';
+import { mapState } from 'vuex'
+import VContainer from './components/Container'
 
 export default {
   name: 'home',
@@ -27,7 +27,7 @@ export default {
   components: {
     VContainer
   }
-};
+}
 </script>
 
 <style scoped>
