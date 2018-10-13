@@ -30,7 +30,7 @@
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
-                        <slot name="label"><div class="uppercase gray label">Bonuses</div></slot>
+                        <slot name="label"><div class="uppercase gray label">Current rate</div></slot>
                         <div class="currency-info">
                             <div class="bold rate uppercase">
                                 1 {{ form.currency }} =
