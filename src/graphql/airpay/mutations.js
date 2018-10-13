@@ -18,6 +18,7 @@ export const SETTINGS_MUTATION = gql`
       bonus
       agreement
       mode
+      symbol
     }
   }
 `;

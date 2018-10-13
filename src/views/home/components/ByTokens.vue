@@ -10,7 +10,7 @@
         <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
               prop="pledge">
-                <slot name="label"><div class="uppercase label">You pladge</div></slot>
+                <slot name="label"><div class="uppercase label">You pledge</div></slot>
                 <el-input min="1" type="number" v-model="form.pledge">
                     <el-select class="currency" v-model="form.currency" slot="append">
                         <el-option label="BTC" value="btc"></el-option>
@@ -26,7 +26,7 @@
                             <span class="summ">
                                 {{ getSum | money }}
                             </span>
-                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'name'], airpay)}}</span>
+                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'symbol'], airpay)}}</span>
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -40,7 +40,7 @@
                                 <span v-if="$R.equals(form.currency, 'btc')">
                                     {{ $R.path(['settings', 'rateBTC'], airpay) | money }}
                                 </span>
-                                {{ $R.path(['settings', 'name'], airpay) }}
+                                {{ $R.path(['settings', 'symbol'], airpay) }}
                             </div>
                             <div v-if="$R.path(['settings', 'bonus'], airpay)" class="bonus uppercase">
                                 Include bonus <span class="percent bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
