@@ -16,28 +16,26 @@
 <script>
 // @ is an alias to /src
 
-import { mapState } from 'vuex'
-import VContainer from './components/Container'
+import { mapState } from 'vuex';
+import VContainer from './components/Container';
 
 export default {
   name: 'home',
   computed: {
-    ...mapState([
-      'airpay'
-    ])
+    ...mapState(['airpay'])
   },
   components: {
     VContainer
   }
-}
+};
 </script>
 
 <style scoped>
-  .main-container {
-    height: 100%;
-    width: 100%;
-  }
-  .home {
-    padding: 50px
-  }
+.main-container {
+  height: 100%;
+  width: 100%;
+}
+.home {
+  padding: 10px;
+}
 </style>
