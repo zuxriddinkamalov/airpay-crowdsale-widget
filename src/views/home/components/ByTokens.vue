@@ -12,10 +12,12 @@
               prop="pledge">
                 <slot name="label"><div class="uppercase label">You pledge</div></slot>
                 <el-input min="1" type="number" v-model="form.pledge">
-                    <el-select class="currency" v-model="form.currency" slot="append">
-                       <el-option label="ETH" value="eth"></el-option>
-                        <el-option label="BTC" value="btc"></el-option>
-
+                    <el-select :default-first-option="true" class="currency" v-model="form.currency" slot="append">
+                       <el-option
+                            v-for="currency in currencies"
+                            :key="currency.symbol"
+                            :label="currency.symbol"
+                            :value="currency.symbol"></el-option>
                     </el-select>
                 </el-input>
             </el-form-item>
@@ -27,7 +29,7 @@
                             <span class="summ">
                                 {{ getSum | money }}
                             </span>
-                            &nbsp;<span class="uppercase">{{$R.path(['settings', 'symbol'], airpay)}}</span>
+                            <span class="uppercase">{{$R.path(['settings', 'asset', 'symbol'], airpay)}}</span>
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -35,13 +37,12 @@
                         <div class="currency-info">
                             <div class="bold rate uppercase">
                                 1 {{ form.currency }} =
-                                <span v-if="$R.equals(form.currency, 'eth')">
-                                    {{ $R.path(['settings', 'rateETH'], airpay) }}
+                                <span>
+                                    {{ $R.prop('rate', $R.find($R.propEq('symbol', form.currency), currencies)) }}
                                 </span>
-                                <span v-if="$R.equals(form.currency, 'btc')">
-                                    {{ $R.path(['settings', 'rateBTC'], airpay) | money }}
+                                <span class="uppercase">
+                                    {{$R.path(['settings', 'asset', 'symbol'], airpay)}}
                                 </span>
-                                {{ $R.path(['settings', 'symbol'], airpay) }}
                             </div>
                             <div v-if="$R.path(['settings', 'bonus'], airpay)" class="bonus uppercase">
                                 Include bonus <span class="percent bold">+{{$R.path(['settings', 'bonus'], airpay)}}%</span>
@@ -53,7 +54,7 @@
 
             <div class="">
                 <el-button
-                    class="button" type="primary"
+                    class="button airpay-button" type="primary"
                     @click="submit('buyTokenForm')">
                     Buy tokens
                 </el-button>
@@ -63,12 +64,13 @@
 </template>
 
 <script>
-import { path, map } from 'ramda'
+import { map, propEq, find, nth, path, prop } from 'ramda'
 import { mapState } from 'vuex'
 import '@/plugins/vue-swimline'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
+
 const SLIDER = [
   {
     flag: 'images/flag-usa.png',
@@ -98,30 +100,15 @@ const SLIDER = [
 export default {
   name: 'ByTokens',
   data: function () {
-    let checkZero = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('Amount is required'))
-      } else if (value < 1) {
-        callback(new Error('Amount can not be less then one'))
-      } else {
-        callback()
-      }
-    }
     return {
       form: {
         pledge: null,
-        currency: 'eth'
-      },
-      rulesByToken: {
-        pledge: [
-          {
-            validator: checkZero,
-            message: 'Amount can not be less then one',
-            trigger: 'blur'
-          }
-        ]
+        currency: null
       }
     }
+  },
+  mounted () {
+    this.form.currency = path(['asset', 'symbol'], nth(0, this.airpay.settings.assetAccept))
   },
   filters: {
     money: function (price) {
@@ -134,6 +121,9 @@ export default {
   },
   methods: {
     submit: function (formName) {
+      if (this.loading) {
+        return
+      }
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
@@ -165,16 +155,38 @@ export default {
         SLIDER
       )
     },
-    getSum: function () {
-      let rate
-      switch (this.form.currency) {
-        case 'btc':
-          rate = path(['settings', 'rateBTC'], this.airpay)
-          break
-        case 'eth':
-          rate = path(['settings', 'rateETH'], this.airpay)
-          break
+    currencies: function () {
+      let assetAccept = this.airpay.settings.assetAccept
+      return map(currency => {
+        return {
+          symbol: currency.asset.symbol,
+          rate: currency.rate,
+          min: currency.minAmount
+        }
+      }, assetAccept)
+    },
+    rulesByToken: function () {
+      let currentCurrency = find(propEq('symbol', this.form.currency), this.currencies)
+      let checkZero = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('Amount is required'))
+        } else if (value < currentCurrency.min) {
+          callback(new Error(`Amount can not be less then ${currentCurrency.min}`))
+        } else {
+          callback()
+        }
       }
+      return {
+        pledge: [
+          {
+            validator: checkZero,
+            trigger: 'blur'
+          }
+        ]
+      }
+    },
+    getSum: function () {
+      let rate = prop('rate', find(propEq('symbol', this.form.currency), this.currencies))
       return parseFloat(rate) * parseFloat(this.form.pledge)
     }
   }

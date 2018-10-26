@@ -2,8 +2,8 @@
     <div class="body">
         <el-container class="container">
             <v-header
-                :logo="$R.path(['settings', 'logo'], settings)"
-                :title="$R.path(['settings', 'name'], settings)"
+                :logo="logo"
+                :title="title"
             />
             <el-main class="main">
                 <el-steps :active="getStep" class="step">
@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import { path, forEach, range, findIndex } from 'ramda'
+import { path, findIndex } from 'ramda'
 import { mapState, mapGetters } from 'vuex'
 
-import { hexToRGBA } from '../../../helpers/colors'
+import { BASE_COLOR, hexToRGBA } from '../../../helpers/colors'
 import VHeader from './Header'
 
 import ByTokens from './ByTokens'
@@ -29,6 +29,7 @@ import VEthereum from './Ethereum'
 import VAgree from './Agreement'
 import VDeposit from './Deposit'
 import VIdentity from './Identity'
+import VWait from './Wait'
 import VFinish from './Finish'
 
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
@@ -52,14 +53,11 @@ export default {
     this.$store.commit(SET_GENERAL_DATA, 'ByTokens')
   },
   updated () {
-    let baseColor = path(['route', 'query', 'color'], this.$store.state)
-    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state)
+    let baseColor = path(['route', 'query', 'color'], this.$store.state) || BASE_COLOR
+    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state) || baseColor
+    document.documentElement.style.setProperty('--primary-color', `#${baseColor}`)
+    document.documentElement.style.setProperty('--rgba-primary-color', `#${baseColor}`)
     document.body.style.background = hexToRGBA(bgColor, 0.1)
-    let buttons = document.getElementsByClassName('button')
-    forEach(index => {
-      buttons.item(index).style.boxShadow =
-        '0 4px 7px 0 ' + hexToRGBA(baseColor, 0.47)
-    }, range(0, buttons.length))
   },
   computed: {
     ...mapState(['component']),
@@ -68,6 +66,12 @@ export default {
       let active = this.component
       let index = findIndex(step => step === active, STEPS) + 1
       return index || 3
+    },
+    logo () {
+      return path(['settings', 'logo'], this.settings) || 'images/no-logo.png'
+    },
+    title () {
+      return path(['settings', 'name'], this.settings)
     }
   },
   watch: {
@@ -95,7 +99,8 @@ export default {
     VAgree,
     VDeposit,
     VIdentity,
-    VFinish
+    VFinish,
+    VWait
   }
 }
 </script>

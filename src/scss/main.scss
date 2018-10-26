@@ -3,11 +3,8 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 
 @import "~element-ui/packages/theme-chalk/src/index";
 
-* {
+*:not(i) {
   font-family: 'Source Sans Pro', sans-serif!important;
-}
-.fa {
-  font: normal normal normal 14px/1 FontAwesome !important;
 }
 
 .el-loading-mask.is-fullscreen {
@@ -41,3 +38,12 @@ input[type=number]::-webkit-outer-spin-button {
 .error-item {
   margin-left: 15px
 }
+
+//.airpay-button {
+//  background-color: var(--primary-color);
+//  border-color: var(--primary-color);
+//  box-shadow: 0 4px 7px 0 rgba(var(--primary-color), 0.47)
+//}
+//.airpay-button:hover, .airpay-button:focus {
+//  background-color: var(--primary-color);
+//}

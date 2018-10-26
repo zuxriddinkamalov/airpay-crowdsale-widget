@@ -20,11 +20,11 @@ export default {
       query: SETTINGS_MUTATION,
       variables () {
         return {
-          id: path(['route', 'query', 'crowdsale'], this.$store.state)
+          crowdsale: path(['route', 'query', 'crowdsale'], this.$store.state)
         }
       },
       update (response) {
-        const data = prop('initCrowdsale', response)
+        const data = prop('getCrowdsale', response)
         this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
           ...this.$store.state.airpay,
           settings: data,

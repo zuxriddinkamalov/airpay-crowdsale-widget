@@ -54,7 +54,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { path } from 'ramda'
 
 import CountDownTimer from '@/components/CountDownTimer'
 import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
@@ -76,12 +75,13 @@ export default {
       })
     },
     paymentDone: function () {
-      let isVerified = path(['authData', 'isVerified'], this.airpay)
-      if (isVerified) {
-        this.$store.commit(SET_GENERAL_DATA, 'VFinish')
-      } else {
-        this.$store.commit(SET_GENERAL_DATA, 'VIdentity')
-      }
+      this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+      // let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay)
+      // if (isWhitelisted) {
+      //   this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+      // } else {
+      //   this.$store.commit(SET_GENERAL_DATA, 'VIdentity')
+      // }
     }
   },
   computed: {

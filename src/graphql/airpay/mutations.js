@@ -1,38 +1,53 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 //  Enter
 export const ENTER_MUTATION = gql`
-  mutation($email: String!, $businessId: String!) {
-    enter(email: $email, business: $businessId)
+  mutation($email: String!, $whitelist: ID!) {
+    userEnter(email: $email, whitelist: $whitelist)
   }
-`;
+`
 
 //  Get widget settings
 export const SETTINGS_MUTATION = gql`
-  query($id: String!) {
-    initCrowdsale(id: $id) {
-      logo
+  query($crowdsale: ID!) {
+    getCrowdsale(crowdsale: $crowdsale){
       name
-      rateBTC
-      rateETH
-      bonus
+      hardcap
+      whitelist
+      asset {
+        symbol
+        name
+      }
+      business {
+        id
+        logo
+        name
+      }
       agreement
-      mode
-      symbol
-      businessId
+      assetAccept {
+        asset {
+          symbol
+        }
+        minAmount
+        rate
+      }
+      whitelist
     }
   }
-`;
+`
 
 // Authorization
 export const AUTHORIZATION_MUTATION = gql`
   mutation($hash: String!, $code: Int!) {
-    auth(hash: $hash, code: $code) {
+    userAuth(hash: $hash, code: $code) {
       authorization
-      isVerified
+       user {
+         email
+       }
+       isWhitelisted
     }
   }
-`;
+`
 
 // Perform buying
 export const PERFORM_BUYING_MUTATION = gql`
@@ -53,16 +68,16 @@ export const PERFORM_BUYING_MUTATION = gql`
       currency
     }
   }
-`;
+`
 
 export const WITHDRAW_TOKENS_MUTATION = gql`
   mutation($address: String!) {
     withdrawTokens(address: $address)
   }
-`;
+`
 
 export const UPLOAD_DOC_MUTATION = gql`
   mutation($selfie: Upload!, $front: Upload!, $docType: String!) {
     uploadDocs(selfie: $selfie, front: $front, docType: $docType)
   }
-`;
+`

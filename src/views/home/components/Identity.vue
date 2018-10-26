@@ -100,7 +100,7 @@
                 </el-row>
             </div>
             <el-button
-                :disabled="loading"
+                :loading="loading"
                 class="button" type="primary"
                 @click="submit('identityForm')">
                 Submit application
@@ -142,15 +142,10 @@ export default {
               }
             })
             .then(response => {
-              /* let data = path(['data', 'buyTokens'], response)
-            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...self.$store.state.airpay,
-              byTokenData: data
-            }) */
-              console.log(response)
               let status = path(['data', 'uploadDocs'], response)
               if (status) {
-                this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+                // this.$store.commit(SET_GENERAL_DATA, 'VWait')
+                this.$store.commit(SET_GENERAL_DATA, 'VAgree')
               } else {
                 this.$message.error('Can`t upload files')
               }

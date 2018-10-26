@@ -4,7 +4,8 @@
             background: `url(${logo})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            backgroundColor: '#fff'
         }">
         </div>
         <div class="title">

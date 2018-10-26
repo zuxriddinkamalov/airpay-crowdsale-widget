@@ -23,7 +23,7 @@
             </el-form-item>
             <el-button
                 v-if="!$R.prop('hash', airpay)"
-                :disabled="loading"
+                :loading="loading"
                 class="button" type="primary"
                 @click="enterToSystem('recForm')">
                 Proceed
@@ -49,7 +49,7 @@
                     </el-input>
                 </el-form-item>
                 <el-button
-                    :disabled="loading"
+                    :loading="loading"
                     class="button" type="primary"
                     @click="verificate('verificateForm')">
                     Authorization
@@ -106,6 +106,9 @@ export default {
   },
   methods: {
     submit () {
+      if (this.loading) {
+        return
+      }
       if (prop('hash', this.airpay)) {
         this.verificate('verificateForm')
       } else {
@@ -121,13 +124,13 @@ export default {
               mutation: ENTER_MUTATION,
               variables: {
                 email: this.form.email,
-                businessId: this.$store.state.airpay.settings.businessId
+                whitelist: this.$store.state.airpay.settings.whitelist
               }
             })
             .then(response => {
               this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
                 ...this.$store.state.airpay,
-                hash: path(['data', 'enter'], response)
+                hash: path(['data', 'userEnter'], response)
               })
               this.loading = false
             })
@@ -180,7 +183,8 @@ export default {
             }
           })
           .then(response => {
-            let data = path(['data', 'auth'], response)
+            let data = path(['data', 'userAuth'], response)
+            let isWhitelisted = path(['data', 'userAuth', 'isWhitelisted'], response)
             sessionStorage.setItem('token', prop('authorization', data))
             self.$store.commit(`forms/${SET_FORM_DATA}`, {
               ...self.$store.state.forms,
@@ -190,7 +194,12 @@ export default {
               ...self.$store.state.airpay,
               authData: data
             })
-            self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+            if (isWhitelisted) {
+              self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+            } else {
+              self.$store.commit(SET_GENERAL_DATA, 'VIdentity')
+              // self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+            }
             self.loading = false
           })
           .catch(response => {

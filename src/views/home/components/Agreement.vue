@@ -4,7 +4,7 @@
             {{ $R.path(['settings', 'agreement'], airpay) }}
         </div>
         <el-button
-            :disabled="loading"
+            :loading="loading"
             class="button" type="primary"
             @click="buyTokens">
             Yes, I'm agree with this terms
