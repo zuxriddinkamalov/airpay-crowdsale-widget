@@ -10,7 +10,7 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 .el-loading-mask.is-fullscreen {
   background-color: rgba(55, 125, 254, 0.2)!important;
   .el-loading-spinner .el-loading-text, .el-loading-spinner i {
-    color: rgba(55, 125, 254, 1);
+    color: #ebf2ff;
     font-size: 20px;
   }
 }
