@@ -21,7 +21,6 @@
 import { path } from 'ramda'
 import { mapState, mapGetters } from 'vuex'
 
-import { BASE_COLOR, getRGB, hexToRGBA, hexToRGBCSS } from '../../../helpers/colors'
 import VHeader from './Header'
 
 import ByTokens from './ByTokens'
@@ -49,14 +48,6 @@ export default {
   mounted () {
     sessionStorage.removeItem('token')
     this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
-  },
-  updated () {
-    let baseColor = hexToRGBA(path(['route', 'query', 'color'], this.$store.state), 1) || BASE_COLOR
-    let bgColor = hexToRGBA(path(['route', 'query', 'bgColor'], this.$store.state), 0.1) || getRGB(baseColor, 0.1)
-    let cssRGB = hexToRGBCSS(baseColor)
-    document.documentElement.style.setProperty('--primary-color', `${baseColor}`)
-    document.documentElement.style.setProperty('--rgb-primary-color', `${cssRGB}`)
-    document.body.style.background = bgColor
   },
   computed: {
     ...mapState(['component', 'step']),

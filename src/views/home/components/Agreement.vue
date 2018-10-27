@@ -34,6 +34,7 @@ export default {
       // clientHeight
     },
     buyTokens: function () {
+      this.loading = true
       this.$apollo.mutate({
         mutation: PERFORM_BUYING_MUTATION,
         variables: {

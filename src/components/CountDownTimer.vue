@@ -1,6 +1,6 @@
 <template>
     <div class="timer-container">
-        <el-progress :width="120" :stroke-width="5" :show-text="false" type="circle" :percentage="getPercent"></el-progress>
+        <el-progress :color="color" :width="120" :stroke-width="5" :show-text="false" type="circle" :percentage="getPercent"></el-progress>
         <div class="timer">{{counter | prettify}}</div>
     </div>
 </template>
@@ -17,6 +17,9 @@ export default {
     minute: {
       type: Number,
       required: true
+    },
+    color: {
+      type: String
     }
   },
   subscriptions () {

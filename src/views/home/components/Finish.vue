@@ -10,10 +10,10 @@
             <el-col :xs="24" :sm="12">
                 <ul class="share">
                     <li class="facebook">
-                        <a href="#"><i class="fa fa-facebook-square" aria-hidden="true"></i></a>
+                        <a href="#"><i class="fab fa-facebook-square"></i></a>
                     </li>
                     <li class="twitter">
-                        <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
                     </li>
                     <li class="telegram">
                         <a href="#"><i class="fa fa-paper-plane" aria-hidden="true"></i></a>

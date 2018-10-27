@@ -32,7 +32,7 @@
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">Time for transaction</div></slot>
                         <div class="timer">
-                            <CountDownTimer :minute="5" />
+                            <CountDownTimer :color="proccessColor" :minute="5" />
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -86,8 +86,12 @@ export default {
   },
   computed: {
     ...mapState([
-      'airpay'
-    ])
+      'airpay',
+      'color'
+    ]),
+    proccessColor: function () {
+      return this.color
+    }
   },
   components: {
     CountDownTimer

@@ -10,7 +10,8 @@ import {
   SET_ACTIVE_TAB,
   SET_NETWORK_ERROR_DATA,
   SET_GRAPHQL_ERROR_DATA,
-  SET_STEP
+  SET_STEP,
+  SET_COLOR
 } from './mutation-types'
 
 /* eslint-disable no-param-reassign */
@@ -20,6 +21,9 @@ export default {
   },
   [SET_STEP] (state, step) {
     state.step = step
+  },
+  [SET_COLOR] (state, color) {
+    state.color = color
   },
   [SET_NETWORK_ERROR_DATA] (state, error) {
     state.networkError = error
