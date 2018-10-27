@@ -6,12 +6,20 @@
  * general state.
  */
 
-import { SET_GENERAL_DATA, SET_NETWORK_ERROR_DATA, SET_GRAPHQL_ERROR_DATA } from './mutation-types'
+import {
+  SET_ACTIVE_TAB,
+  SET_NETWORK_ERROR_DATA,
+  SET_GRAPHQL_ERROR_DATA,
+  SET_STEP
+} from './mutation-types'
 
 /* eslint-disable no-param-reassign */
 export default {
-  [SET_GENERAL_DATA] (state, component) {
+  [SET_ACTIVE_TAB] (state, component) {
     state.component = component
+  },
+  [SET_STEP] (state, step) {
+    state.step = step
   },
   [SET_NETWORK_ERROR_DATA] (state, error) {
     state.networkError = error

@@ -56,7 +56,7 @@
 import { mapState } from 'vuex'
 
 import CountDownTimer from '@/components/CountDownTimer'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Deposit',
@@ -75,12 +75,12 @@ export default {
       })
     },
     paymentDone: function () {
-      this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+      this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
       // let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay)
       // if (isWhitelisted) {
-      //   this.$store.commit(SET_GENERAL_DATA, 'VFinish')
+      //   this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
       // } else {
-      //   this.$store.commit(SET_GENERAL_DATA, 'VIdentity')
+      //   this.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
       // }
     }
   },

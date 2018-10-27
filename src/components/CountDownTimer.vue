@@ -9,7 +9,7 @@
 import '@/plugins/vue-rx'
 import { interval } from 'rxjs'
 import { startWith, scan, take, map } from 'rxjs/operators'
-import { SET_GENERAL_DATA } from '../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../store/modules/general/mutation-types'
 import { SET_AIRPAY_DATA } from '../store/modules/airpay/mutation-types'
 
 export default {
@@ -29,7 +29,7 @@ export default {
         scan((total, change) => total - 1),
         map(val => {
           if (val === 0) {
-            self.$store.commit(SET_GENERAL_DATA, 'ByTokens')
+            self.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
             self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
               settings: this.$store.state.airpay.settings
             })

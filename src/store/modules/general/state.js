@@ -7,6 +7,7 @@
 
 export default {
   component: '',
+  step: 1,
   networkError: null,
   graphQLError: null
 }

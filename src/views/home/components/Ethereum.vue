@@ -64,7 +64,7 @@ import { mapState } from 'vuex'
 import { path, prop } from 'ramda'
 import { isAddress } from 'ethereum-address'
 import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import {
   AUTHORIZATION_MUTATION,
   ENTER_MUTATION
@@ -194,11 +194,11 @@ export default {
               ...self.$store.state.airpay,
               authData: data
             })
+            self.$store.commit(SET_STEP, 2)
             if (isWhitelisted) {
-              self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+              self.$store.commit(SET_ACTIVE_TAB, 'VAgree')
             } else {
-              self.$store.commit(SET_GENERAL_DATA, 'VIdentity')
-              // self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+              self.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
             }
             self.loading = false
           })
