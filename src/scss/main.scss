@@ -4,21 +4,21 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 @import "~element-ui/packages/theme-chalk/src/index";
 
 *:not(i) {
-  font-family: 'Source Sans Pro', sans-serif!important;
+  font-family: 'Source Sans Pro', sans-serif!important
 }
 
 .el-loading-mask.is-fullscreen {
-  background-color: rgba(55, 125, 254, 0.2)!important;
+  background-color: #ebf2ff!important;
   .el-loading-spinner .el-loading-text, .el-loading-spinner i {
-    color: #ebf2ff;
-    font-size: 20px;
+    color: rgba(55, 125, 254, 1);
+    font-size: 20px
   }
 }
 
 .el-input__inner {
   height: 48px;
   font-size: 18px!important;
-  color: #000;
+  color: #000
 }
 
 input[type=number]::-webkit-inner-spin-button,
