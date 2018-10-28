@@ -56,6 +56,7 @@ export default {
     document.documentElement.style.setProperty('--rgb-primary-color', `${cssRGB}`)
     document.body.style.background = bgColor
     this.$store.commit(SET_COLOR, baseColor)
+    sessionStorage.removeItem('token')
   }
 }
 </script>

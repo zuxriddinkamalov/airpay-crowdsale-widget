@@ -9,8 +9,6 @@
 import '@/plugins/vue-rx'
 import { interval } from 'rxjs'
 import { startWith, scan, take, map } from 'rxjs/operators'
-import { SET_ACTIVE_TAB } from '../store/modules/general/mutation-types'
-import { SET_AIRPAY_DATA } from '../store/modules/airpay/mutation-types'
 
 export default {
   props: {
@@ -23,19 +21,16 @@ export default {
     }
   },
   subscriptions () {
-    let self = this
-    let minute = this.minute
+    let seconds = this.minute * 60
     return {
       counter: interval(1000).pipe(
-        take(minute * 60),
-        startWith(minute * 60),
+        take(seconds),
+        startWith(seconds),
         scan((total, change) => total - 1),
         map(val => {
           if (val === 0) {
-            self.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
-            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              settings: this.$store.state.airpay.settings
-            })
+            sessionStorage.removeItem('token')
+            location.reload()
           }
           return val
         })
