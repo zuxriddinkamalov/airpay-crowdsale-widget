@@ -1,9 +1,8 @@
 <template>
   <el-container
     class="main-container"
-    element-loading-text="Loading..."
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
+      element-loading-background="#ebeef4"
     v-loading.fullscreen="airpay.loading">
     <el-main
       class="home"
@@ -16,8 +15,8 @@
 <script>
 // @ is an alias to /src
 
-import { mapState } from 'vuex'
-import VContainer from './components/Container'
+import { mapState } from 'vuex';
+import VContainer from './components/Container';
 
 export default {
   name: 'home',
@@ -27,7 +26,7 @@ export default {
   components: {
     VContainer
   }
-}
+};
 </script>
 
 <style scoped>

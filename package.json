@@ -9,7 +9,6 @@
     "postinstall": "npm install express"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.4.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.7",
     "@fortawesome/free-solid-svg-icons": "^5.4.2",
     "@fortawesome/vue-fontawesome": "^0.1.1",
@@ -22,7 +21,6 @@
     "apollo-upload-client": "^8.1.0",
     "element-ui": "^2.4.7",
     "ethereum-address": "0.0.4",
-    "express": "^4.16.3",
     "font-awesome": "^4.7.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.9.2",
@@ -41,11 +39,12 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.4.2",
     "@vue/cli-plugin-babel": "^3.0.4",
     "@vue/cli-plugin-eslint": "^3.0.4",
     "@vue/cli-service": "^3.0.4",
     "@vue/eslint-config-standard": "^3.0.4",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17"
