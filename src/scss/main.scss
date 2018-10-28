@@ -10,7 +10,7 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 .el-loading-mask.is-fullscreen {
   background-color: rgba(55, 125, 254, 0.2)!important;
   .el-loading-spinner .el-loading-text, .el-loading-spinner i {
-    color: rgba(55, 125, 254, 1);
+    color: #ebf2ff;
     font-size: 20px;
   }
 }
@@ -39,11 +39,12 @@ input[type=number]::-webkit-outer-spin-button {
   margin-left: 15px
 }
 
-//.airpay-button {
-//  background-color: var(--primary-color);
-//  border-color: var(--primary-color);
-//  box-shadow: 0 4px 7px 0 rgba(var(--primary-color), 0.47)
-//}
-//.airpay-button:hover, .airpay-button:focus {
-//  background-color: var(--primary-color);
-//}
+.el-button--primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 7px 0 rgba(var(--rgb-primary-color), 0.47);
+  &:hover, &:focus {
+    background-color: rgba(var(--rgb-primary-color), 0.8);
+    border-color: rgba(var(--rgb-primary-color), 0.8)
+  }
+}

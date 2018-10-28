@@ -6,7 +6,7 @@
                 :title="title"
             />
             <el-main class="main">
-                <el-steps :active="getStep" class="step">
+                <el-steps :active="step" class="step">
                     <el-step></el-step>
                     <el-step></el-step>
                     <el-step></el-step>
@@ -18,10 +18,9 @@
 </template>
 
 <script>
-import { path, findIndex } from 'ramda'
+import { path } from 'ramda'
 import { mapState, mapGetters } from 'vuex'
 
-import { BASE_COLOR, hexToRGBA } from '../../../helpers/colors'
 import VHeader from './Header'
 
 import ByTokens from './ByTokens'
@@ -32,13 +31,11 @@ import VIdentity from './Identity'
 import VWait from './Wait'
 import VFinish from './Finish'
 
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 import {
   prepareGraphQLErrors,
   prepareNetworkErrors
 } from '../../../helpers/general'
-
-const STEPS = ['ByTokens', 'VEthereum', 'VDeposit']
 
 export default {
   name: 'Container',
@@ -50,23 +47,11 @@ export default {
   },
   mounted () {
     sessionStorage.removeItem('token')
-    this.$store.commit(SET_GENERAL_DATA, 'ByTokens')
-  },
-  updated () {
-    let baseColor = path(['route', 'query', 'color'], this.$store.state) || BASE_COLOR
-    let bgColor = path(['route', 'query', 'bgColor'], this.$store.state) || baseColor
-    document.documentElement.style.setProperty('--primary-color', `#${baseColor}`)
-    document.documentElement.style.setProperty('--rgba-primary-color', `#${baseColor}`)
-    document.body.style.background = hexToRGBA(bgColor, 0.1)
+    this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
   },
   computed: {
-    ...mapState(['component']),
+    ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
-    getStep () {
-      let active = this.component
-      let index = findIndex(step => step === active, STEPS) + 1
-      return index || 3
-    },
     logo () {
       return path(['settings', 'logo'], this.settings) || 'images/no-logo.png'
     },
@@ -181,6 +166,9 @@ export default {
             .main
                 .step
                     margin-bottom: 30px
+                    .el-step__head.is-finish
+                        color: var(--primary-color)
+                        border-color: var(--primary-color)
                     .el-step.is-horizontal .el-step__line
                         height: 5px
                         top: 9px
@@ -192,7 +180,7 @@ export default {
                         color: #AFC0D0
                     .is-finish
                         .el-step__icon.is-text
-                            color: #377DFE
-                            border-color: #377DFE
+                            color: var(--primary-color)
+                            border-color: var(--primary-color)
 
 </style>

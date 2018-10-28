@@ -1,6 +1,6 @@
 <template>
     <div class="timer-container">
-        <el-progress :width="120" :stroke-width="5" :show-text="false" type="circle" :percentage="getPercent"></el-progress>
+        <el-progress :color="color" :width="120" :stroke-width="5" :show-text="false" type="circle" :percentage="getPercent"></el-progress>
         <div class="timer">{{counter | prettify}}</div>
     </div>
 </template>
@@ -9,7 +9,7 @@
 import '@/plugins/vue-rx'
 import { interval } from 'rxjs'
 import { startWith, scan, take, map } from 'rxjs/operators'
-import { SET_GENERAL_DATA } from '../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../store/modules/general/mutation-types'
 import { SET_AIRPAY_DATA } from '../store/modules/airpay/mutation-types'
 
 export default {
@@ -17,6 +17,9 @@ export default {
     minute: {
       type: Number,
       required: true
+    },
+    color: {
+      type: String
     }
   },
   subscriptions () {
@@ -29,7 +32,7 @@ export default {
         scan((total, change) => total - 1),
         map(val => {
           if (val === 0) {
-            self.$store.commit(SET_GENERAL_DATA, 'ByTokens')
+            self.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
             self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
               settings: this.$store.state.airpay.settings
             })

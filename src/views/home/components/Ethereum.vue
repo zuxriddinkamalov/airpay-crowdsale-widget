@@ -1,13 +1,10 @@
 <template>
     <div @keyup.enter="submit">
         <el-form @submit.prevent.native :model="form" :rules="rulesEthereum" ref="recForm">
-            <!--
-            0xBff22763a7D6e15Bd744422bb00961683F771595
-            -->
             <el-form-item
                 prop="withDrawAddress">
                 <slot name="label"><div class="uppercase label">Please enter your recipient address:</div></slot>
-                <el-input class="receipter" placeholder="Please enter recipient address" v-model="form.withDrawAddress"></el-input>
+                <el-input autofocus="true" class="receipter" placeholder="Please enter recipient address" v-model="form.withDrawAddress"></el-input>
             </el-form-item>
             <el-form-item>
                 <div class="info-tooltip">
@@ -64,7 +61,7 @@ import { mapState } from 'vuex'
 import { path, prop } from 'ramda'
 import { isAddress } from 'ethereum-address'
 import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import {
   AUTHORIZATION_MUTATION,
   ENTER_MUTATION
@@ -194,11 +191,11 @@ export default {
               ...self.$store.state.airpay,
               authData: data
             })
+            self.$store.commit(SET_STEP, 2)
             if (isWhitelisted) {
-              self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+              self.$store.commit(SET_ACTIVE_TAB, 'VAgree')
             } else {
-              self.$store.commit(SET_GENERAL_DATA, 'VIdentity')
-              // self.$store.commit(SET_GENERAL_DATA, 'VAgree')
+              self.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
             }
             self.loading = false
           })

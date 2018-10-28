@@ -50,6 +50,7 @@
                                     </el-button>
                                     <el-button
                                         class="clear-file"
+                                        type="primary"
                                         @click.prevent="clearFile('selfie')"
                                         v-else slot="tip"
                                         size="small" round>
@@ -86,6 +87,7 @@
                                     </el-button>
                                     <el-button
                                         class="clear-file"
+                                        type="primary"
                                         @click.prevent="clearFile('front')"
                                         v-else slot="tip"
                                         size="small" round>
@@ -112,7 +114,7 @@
 <script>
 import { prop, path } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
 
 export default {
@@ -144,8 +146,8 @@ export default {
             .then(response => {
               let status = path(['data', 'uploadDocs'], response)
               if (status) {
-                // this.$store.commit(SET_GENERAL_DATA, 'VWait')
-                this.$store.commit(SET_GENERAL_DATA, 'VAgree')
+                this.$store.commit(SET_STEP, 2)
+                this.$store.commit(SET_ACTIVE_TAB, 'VAgree')
               } else {
                 this.$message.error('Can`t upload files')
               }
@@ -208,14 +210,14 @@ export default {
             width: 100%
         button
             text-align: left
+            margin: 15px auto
+        .upload-button
             background: transparent
             border: 1px solid #387EFE
             color: #4686FE
-            margin: 15px auto
         .clear-file
             width: 100%
             color: #fff
-            background-color: #377DFE
             position: absolute
             left: 0
             .icon

@@ -7,11 +7,11 @@
                 :circular="true"
                 :words="sliderText"></vue-swimlane>
         </div>
-        <el-form @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
+        <el-form :validateOnRuleChange="false" @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
             <el-form-item class="pledge input-with-button"
               prop="pledge">
                 <slot name="label"><div class="uppercase label">You pledge</div></slot>
-                <el-input min="1" type="number" v-model="form.pledge">
+                <el-input autofocus="true" type="number" v-model="form.pledge">
                     <el-select :default-first-option="true" class="currency" v-model="form.currency" slot="append">
                        <el-option
                             v-for="currency in currencies"
@@ -54,7 +54,7 @@
 
             <div class="">
                 <el-button
-                    class="button airpay-button" type="primary"
+                    class="button" type="primary"
                     @click="submit('buyTokenForm')">
                     Buy tokens
                 </el-button>
@@ -67,7 +67,7 @@
 import { map, propEq, find, nth, path, prop } from 'ramda'
 import { mapState } from 'vuex'
 import '@/plugins/vue-swimline'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
 
@@ -130,7 +130,8 @@ export default {
             ...this.$store.state.form,
             byTokenForm: this.form
           })
-          this.$store.commit(SET_GENERAL_DATA, 'VEthereum')
+          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+          this.$store.commit(SET_STEP, 2)
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
@@ -180,7 +181,7 @@ export default {
         pledge: [
           {
             validator: checkZero,
-            trigger: 'blur'
+            trigger: ['submit', 'blur']
           }
         ]
       }

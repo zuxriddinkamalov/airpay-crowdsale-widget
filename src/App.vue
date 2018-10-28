@@ -12,6 +12,8 @@
 import { SETTINGS_MUTATION } from '@/graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '@/store/modules/airpay/mutation-types'
 import { prop, path } from 'ramda'
+import { SET_COLOR } from './store/modules/general/mutation-types'
+import { BASE_COLOR, getRGB, hexToRGBA, hexToRGBCSS } from './helpers/colors'
 
 export default {
   name: 'App',
@@ -45,6 +47,15 @@ export default {
         })
       }
     }
+  },
+  mounted () {
+    let baseColor = hexToRGBA(path(['route', 'query', 'color'], this.$store.state), 1) || BASE_COLOR
+    let bgColor = hexToRGBA(path(['route', 'query', 'bgColor'], this.$store.state), 0.1) || getRGB(baseColor, 0.1)
+    let cssRGB = hexToRGBCSS(baseColor)
+    document.documentElement.style.setProperty('--primary-color', `${baseColor}`)
+    document.documentElement.style.setProperty('--rgb-primary-color', `${cssRGB}`)
+    document.body.style.background = bgColor
+    this.$store.commit(SET_COLOR, baseColor)
   }
 }
 </script>

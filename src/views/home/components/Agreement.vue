@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="agreement">
+        <div class="agreement" @scroll="readAgreement">
             {{ $R.path(['settings', 'agreement'], airpay) }}
         </div>
         <el-button
@@ -17,7 +17,7 @@ import { mapState } from 'vuex'
 import { path } from 'ramda'
 import { PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
-import { SET_GENERAL_DATA } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Agreement',
@@ -27,7 +27,14 @@ export default {
     }
   },
   methods: {
+    readAgreement: function (e) {
+      // console.warn(e.target.scrollTop)
+      // console.warn(e)
+      // scrollHeight
+      // clientHeight
+    },
     buyTokens: function () {
+      this.loading = true
       this.$apollo.mutate({
         mutation: PERFORM_BUYING_MUTATION,
         variables: {
@@ -42,7 +49,8 @@ export default {
           ...this.$store.state.airpay,
           byTokenData: data
         })
-        this.$store.commit(SET_GENERAL_DATA, 'VDeposit')
+        this.$store.commit(SET_STEP, 3)
+        this.$store.commit(SET_ACTIVE_TAB, 'VDeposit')
         this.loading = false
       }).catch(response => {
         this.loading = false

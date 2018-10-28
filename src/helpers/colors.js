@@ -15,7 +15,11 @@ export const hexToRGBA = (hex, opacity) => {
       color = [color[0], color[0], color[1], color[1], color[2], color[2]]
     }
     color = '0x' + color.join('')
-    return 'rgba(' + [(color >> 16) & 255, (color >> 8) & 255, color & 255].join(',') + `, ${opacity})`
+    return 'rgba(' + [(color >> 16) & 255, (color >> 8) & 255, color & 255].join(',') + `,${opacity})`
   }
-  return getRGB(BASE_COLOR, opacity)
+}
+
+export const hexToRGBCSS = (rgba) => {
+  let color = rgba.replace(/^(rgb|rgba)\(/, '').replace(/\)$/, '').replace(/\s/g, '').split(',')
+  return remove(3, 1, color).join()
 }
