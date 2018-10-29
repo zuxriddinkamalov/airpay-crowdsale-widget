@@ -20,9 +20,9 @@
 </template>
 
 <script>
-import '@/plugins/vue-rx';
-import { interval } from 'rxjs';
-import { startWith, scan, take, map } from 'rxjs/operators';
+import '@/plugins/vue-rx'
+import { interval } from 'rxjs'
+import { startWith, scan, take, map } from 'rxjs/operators'
 
 export default {
   name: 'CountDownDate',
@@ -32,42 +32,42 @@ export default {
       required: true
     }
   },
-  subscriptions() {
-    let now = new Date().getTime();
-    let distanceTime = this.date.getTime() - now;
+  subscriptions () {
+    let now = new Date().getTime()
+    let distanceTime = this.date.getTime() - now
     return {
       counter: interval(1000).pipe(
         take(distanceTime),
         startWith(distanceTime),
         scan((distance, change) => {
-          return distance - 1000;
+          return distance - 1000
         }),
         map(distance => {
-          let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          let days = Math.floor(distance / (1000 * 60 * 60 * 24))
           let hours = Math.floor(
             (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-          );
-          let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          )
+          let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+          let seconds = Math.floor((distance % (1000 * 60)) / 1000)
           return {
             days: days,
             hours: hours,
             minutes: minutes,
             seconds: seconds
-          };
+          }
         })
       )
-    };
+    }
   },
   filters: {
-    prettify: function(value) {
+    prettify: function (value) {
       if (value < 10) {
-        value = '0' + value;
+        value = '0' + value
       }
-      return value;
+      return value
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>
