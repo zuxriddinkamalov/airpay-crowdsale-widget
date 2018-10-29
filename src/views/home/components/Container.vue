@@ -90,7 +90,6 @@ export default {
     },
     graphQLError (newValue, oldValue) {
       let message = prepareGraphQLErrors(newValue)
-      this.$store.commit(SET_ACTIVE_TAB, 'VError')
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
