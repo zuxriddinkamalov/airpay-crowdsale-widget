@@ -18,26 +18,26 @@
 </template>
 
 <script>
-import { path } from 'ramda'
-import { mapState, mapGetters } from 'vuex'
-import moment from 'moment'
+import { path } from 'ramda';
+import { mapState, mapGetters } from 'vuex';
+import moment from 'moment';
 
-import VHeader from './Header'
+import VHeader from './Header';
 
-import VStartIndicator from './StartIndicator'
-import ByTokens from './ByTokens'
-import VEthereum from './Ethereum'
-import VAgree from './Agreement'
-import VDeposit from './Deposit'
-import VIdentity from './Identity'
-import VWait from './Wait'
-import VFinish from './Finish'
+import VStartIndicator from './StartIndicator';
+import ByTokens from './ByTokens';
+import VEthereum from './Ethereum';
+import VAgree from './Agreement';
+import VDeposit from './Deposit';
+import VIdentity from './Identity';
+import VWait from './Wait';
+import VFinish from './Finish';
 
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types';
 import {
   prepareGraphQLErrors,
   prepareNetworkErrors
-} from '../../../helpers/general'
+} from '../../../helpers/general';
 
 export default {
   name: 'Container',
@@ -50,37 +50,40 @@ export default {
   computed: {
     ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
-    logo () {
-      return path(['settings', 'logo'], this.settings) || 'images/no-logo.png'
+    logo() {
+      return (
+        path(['settings', 'business', 'logo'], this.settings) ||
+        'images/no-logo.png'
+      );
     },
-    title () {
-      return path(['settings', 'name'], this.settings)
+    title() {
+      return path(['settings', 'name'], this.settings);
     }
   },
-  mounted () {
-    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY')
+  mounted() {
+    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY');
     if (startDate.diff(moment()) > 0) {
-      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator')
+      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator');
     } else {
-      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
+      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens');
     }
   },
   watch: {
-    networkError (newValue, oldValue) {
-      let message = prepareNetworkErrors(newValue)
+    networkError(newValue, oldValue) {
+      let message = prepareNetworkErrors(newValue);
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      })
+      });
     },
-    graphQLError (newValue, oldValue) {
-      let message = prepareGraphQLErrors(newValue)
+    graphQLError(newValue, oldValue) {
+      let message = prepareGraphQLErrors(newValue);
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      })
+      });
     }
   },
   components: {
@@ -94,7 +97,7 @@ export default {
     VFinish,
     VWait
   }
-}
+};
 </script>
 
 <style lang="sass">
