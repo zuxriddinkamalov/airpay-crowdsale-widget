@@ -11,7 +11,7 @@
 import { SETTINGS_MUTATION } from '@/graphql/airpay/mutations'
 import { SET_AIRPAY_DATA } from '@/store/modules/airpay/mutation-types'
 import { prop, path } from 'ramda'
-import { SET_COLOR } from './store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_COLOR } from './store/modules/general/mutation-types'
 import { BASE_COLOR, getRGB, hexToRGBA, hexToRGBCSS } from './helpers/colors'
 
 export default {
@@ -33,6 +33,7 @@ export default {
         })
       },
       error (error) {
+        this.$store.commit(SET_ACTIVE_TAB, 'VError')
         this.$notify.error({
           title: 'Error',
           message: error.message,

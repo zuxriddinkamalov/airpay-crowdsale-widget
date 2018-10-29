@@ -38,7 +38,7 @@ export default {
         font-size: 14px
         letter-spacing: 0.5px
         line-height: 1.4
-        margin: 20px auto 50px
+        margin: 20px auto
         max-width: 400px
 
 </style>

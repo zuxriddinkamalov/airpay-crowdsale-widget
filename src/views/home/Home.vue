@@ -2,12 +2,12 @@
   <el-container
     class="main-container"
     element-loading-spinner="el-icon-loading"
-      element-loading-background="#ebeef4"
+    element-loading-background="#ebeef4"
     v-loading.fullscreen="airpay.loading">
     <el-main
       class="home"
       v-if="!airpay.loading">
-      <v-container v-if="airpay.settings" :settings="airpay" />
+      <v-container :settings="airpay" />
     </el-main>
   </el-container>
 </template>
