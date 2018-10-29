@@ -32,6 +32,8 @@ export const SETTINGS_MUTATION = gql`
         rate
       }
       whitelist
+      endDate
+      startDate
     }
   }
 `

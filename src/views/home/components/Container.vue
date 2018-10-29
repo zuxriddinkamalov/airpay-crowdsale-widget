@@ -20,9 +20,11 @@
 <script>
 import { path } from 'ramda'
 import { mapState, mapGetters } from 'vuex'
+import moment from 'moment'
 
 import VHeader from './Header'
 
+import VStartIndicator from './StartIndicator'
 import ByTokens from './ByTokens'
 import VEthereum from './Ethereum'
 import VAgree from './Agreement'
@@ -45,10 +47,6 @@ export default {
       required: true
     }
   },
-  mounted () {
-    sessionStorage.removeItem('token')
-    this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
-  },
   computed: {
     ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
@@ -57,6 +55,14 @@ export default {
     },
     title () {
       return path(['settings', 'name'], this.settings)
+    }
+  },
+  mounted () {
+    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY')
+    if (startDate.diff(moment()) > 0) {
+      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator')
+    } else {
+      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
     }
   },
   watch: {
@@ -79,6 +85,7 @@ export default {
   },
   components: {
     VHeader,
+    VStartIndicator,
     ByTokens,
     VEthereum,
     VAgree,
