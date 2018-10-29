@@ -18,28 +18,31 @@
 </template>
 
 <script>
-import { path } from 'ramda'
-import { mapState, mapGetters } from 'vuex'
-import moment from 'moment'
+import { path } from 'ramda';
+import { mapState, mapGetters } from 'vuex';
+import moment from 'moment';
 
-import VHeader from './Header'
+import VHeader from './Header';
 
-import VStartIndicator from './StartIndicator'
-import ByTokens from './ByTokens'
-import VEthereum from './Ethereum'
-import VAgree from './Agreement'
-import VDeposit from './Deposit'
-import VIdentity from './Identity'
-import VWait from './Wait'
-import VWaitDocument from './WaitDocument'
-import VCrowdsaleReached from './CrowdsaleReached'
-import VFinish from './Finish'
+import VStartIndicator from './StartIndicator';
+import ByTokens from './ByTokens';
+import VEthereum from './Ethereum';
+import VAgree from './Agreement';
+import VDeposit from './Deposit';
+import VIdentity from './Identity';
+import VWait from './Wait';
+import VWaitDocument from './WaitDocument';
+import VCrowdsaleReached from './CrowdsaleReached';
+import VFinish from './Finish';
 
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
 import {
   prepareGraphQLErrors,
   prepareNetworkErrors
-} from '../../../helpers/general'
+} from '../../../helpers/general';
 
 export default {
   name: 'Container',
@@ -52,44 +55,44 @@ export default {
   computed: {
     ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
-    logo () {
+    logo() {
       return (
         path(['settings', 'business', 'logo'], this.settings) ||
         'images/no-logo.png'
-      )
+      );
     },
-    title () {
-      return path(['settings', 'name'], this.settings)
+    title() {
+      return path(['settings', 'name'], this.settings);
     }
   },
-  mounted () {
-    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY')
-    let endDate = moment(this.settings.settings.endDate, 'DD/MM/YYYY')
+  mounted() {
+    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY');
+    let endDate = moment(this.settings.settings.endDate, 'DD/MM/YYYY');
     if (startDate.diff(moment()) > 0) {
-      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator')
+      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator');
     } else if (moment().diff(endDate) > 0) {
-      this.$store.commit(SET_STEP, 0)
-      this.$store.commit(SET_ACTIVE_TAB, 'VCrowdsaleReached')
+      this.$store.commit(SET_STEP, 0);
+      this.$store.commit(SET_ACTIVE_TAB, 'VCrowdsaleReached');
     } else {
-      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
+      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens');
     }
   },
   watch: {
-    networkError (newValue, oldValue) {
-      let message = prepareNetworkErrors(newValue)
+    networkError(newValue, oldValue) {
+      let message = prepareNetworkErrors(newValue);
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      })
+      });
     },
-    graphQLError (newValue, oldValue) {
-      let message = prepareGraphQLErrors(newValue)
+    graphQLError(newValue, oldValue) {
+      let message = prepareGraphQLErrors(newValue);
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
         message: message
-      })
+      });
     }
   },
   components: {
@@ -105,7 +108,7 @@ export default {
     VCrowdsaleReached,
     VWait
   }
-}
+};
 </script>
 
 <style lang="sass">
@@ -142,8 +145,8 @@ export default {
         letter-spacing: 0.76px
     .label
         font-family: SourceSansPro-Regular, sans-serif
-        font-size: 14px
-        color: #777777
+        font-size: 15px
+        color: #444
         letter-spacing: 1.33px
     .input-button
         padding: 0 10px
@@ -178,7 +181,7 @@ export default {
             max-width: 500px
             margin: auto
             background: #fff
-            box-shadow: 0 4px 14px 0 rgba(0,0,0,0.12)
+            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.2)
             border-radius: 5px
             flex-wrap: wrap
             .main

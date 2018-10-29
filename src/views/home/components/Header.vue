@@ -27,7 +27,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
@@ -36,7 +36,7 @@ export default {
         position: relative
         width: 100%
         padding-top: 50px
-        padding-bottom: 30px
+        padding-bottom: 50px
         .logo
             width: 80px
             height: 80px
@@ -50,8 +50,10 @@ export default {
             right: 0
             margin: 0 auto
             background: #FFFFFF
-            box-shadow: 2px 2px 7px 0 rgba(220,220,220,0.50)
+            border: 3px solid #FFFFFF
+            box-shadow: 0px 0px 3px 1px rgba(220,220,220,0.40)
         .title
+            margin-top: 14px
             text-align: center
             font-size: 24px
             font-weight: 600
