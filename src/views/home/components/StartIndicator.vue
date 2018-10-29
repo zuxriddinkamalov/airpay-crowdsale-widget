@@ -2,13 +2,13 @@
     <div @keyup.enter="submit('indicatorForm')">
         <el-form :validateOnRuleChange="false" @submit.prevent.native ref="indicatorForm" :model="form">
             <el-form-item class="pledge input-with-button">
-                <slot name="label"><div class="uppercase label">Crowdsales starts in</div></slot>
+                <slot name="label"><div class="uppercase label">Crowdsale starts in</div></slot>
                 <VCountDownDate :date="indicatorDate"/>
             </el-form-item>
             <div class="divider"></div>
             <el-form-item
                 :rules="[
-                    { required: true, message: 'Please enter pladge', trigger: 'blur' },
+                    { required: true, message: 'Please enter pladge amount', trigger: 'blur' },
                 ]"
                 class="pledge input-with-button" prop="pledge">
                 <slot name="label"><div class="uppercase label">How much you plan pladge?</div></slot>
@@ -23,7 +23,7 @@
                 <el-button
                     class="button" type="primary"
                     @click="submit('indicatorForm')">
-                    Join our white list!
+                    Join to our whitelist
                 </el-button>
             </div>
         </el-form>
@@ -31,70 +31,75 @@
 </template>
 
 <script>
-import { nth, path } from 'ramda'
-import { mapState } from 'vuex'
-import moment from 'moment'
-import VCountDownDate from '@/components/CountDownDate'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
-import { prepareValidateErrors } from '../../../helpers/general'
+import { nth, path } from 'ramda';
+import { mapState } from 'vuex';
+import moment from 'moment';
+import VCountDownDate from '@/components/CountDownDate';
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types';
+import { prepareValidateErrors } from '../../../helpers/general';
 
 export default {
   name: 'StartIndicator',
-  data: function () {
+  data: function() {
     return {
       form: {
         pledge: null,
         currency: null
       }
-    }
+    };
   },
-  mounted () {
-    this.form.currency = path(['asset', 'symbol'], nth(0, this.airpay.settings.assetAccept))
+  mounted() {
+    this.form.currency = path(
+      ['asset', 'symbol'],
+      nth(0, this.airpay.settings.assetAccept)
+    );
   },
   methods: {
-    submit: function (formName) {
+    submit: function(formName) {
       if (this.loading) {
-        return
+        return;
       }
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum');
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     }
   },
   computed: {
     ...mapState(['airpay']),
-    indicatorDate: function () {
-      let startDate = this.airpay.settings.startDate
-      return moment(startDate, 'DD/MM/YYYY').toDate()
+    indicatorDate: function() {
+      let startDate = this.airpay.settings.startDate;
+      return moment(startDate, 'DD/MM/YYYY').toDate();
     }
   },
   components: {
     VCountDownDate
   }
-}
+};
 </script>
 
 <style lang="sass">
     .pledge
         & input, .currency
             font-weight: 600
-            color: #313131
+            color: #000
+
     .pledge
+
         .currency
             width: 90px
     .currency-prefix
         height: 100%
-        font-size: 16px
+        font-size: 14px
         color: #000
         padding: 5px 10px
 
