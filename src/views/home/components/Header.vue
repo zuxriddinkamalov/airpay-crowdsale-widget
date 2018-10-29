@@ -26,7 +26,7 @@ export default {
       type: String
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>
