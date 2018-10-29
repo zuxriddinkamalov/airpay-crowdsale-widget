@@ -43,6 +43,7 @@
                                     :auto-upload="false">
                                     <el-button
                                         class="upload-button"
+                                        type="primary"
                                         v-if="!form.selfie"
                                         slot="trigger"
                                         size="small" round>
@@ -82,6 +83,7 @@
                                         class="upload-button"
                                         v-if="!form.front"
                                         slot="trigger"
+                                        type="primary"
                                         size="small" round>
                                         <span class="icon"><i class="el-icon-plus"></i></span> Selfie photo
                                     </el-button>
@@ -146,8 +148,8 @@ export default {
             .then(response => {
               let status = path(['data', 'uploadDocs'], response)
               if (status) {
-                this.$store.commit(SET_STEP, 2)
-                this.$store.commit(SET_ACTIVE_TAB, 'VAgree')
+                this.$store.commit(SET_STEP, 3)
+                this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
               } else {
                 this.$message.error('Can`t upload files')
               }
@@ -197,13 +199,14 @@ export default {
         height: 160px
         padding: 10px
         .upload-button
-            padding: 5px 15px
+            padding: 3px 15px
+            color: #fff
             font-size: 16px
             .icon
                 font-size: 20px
                 i
                     vertical-align: middle
-        &>div
+        & > div
             position: relative
         .el-upload
             text-align: left
@@ -211,10 +214,6 @@ export default {
         button
             text-align: left
             margin: 15px auto
-        .upload-button
-            background: transparent
-            border: 1px solid #387EFE
-            color: #4686FE
         .clear-file
             width: 100%
             color: #fff

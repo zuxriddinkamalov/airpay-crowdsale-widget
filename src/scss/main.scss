@@ -8,9 +8,9 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 }
 
 .el-loading-mask.is-fullscreen {
-  background-color: #ebf2ff!important;
+  background-color: transparent!important;
   .el-loading-spinner .el-loading-text, .el-loading-spinner i {
-    color: rgba(55, 125, 254, 1);
+    color: var(--primary-color);
     font-size: 20px
   }
 }

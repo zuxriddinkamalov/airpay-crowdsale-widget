@@ -1,14 +1,14 @@
 <template>
     <div>
-        <div class="success-finish"><i class="el-icon-check"></i></div>
-        <h2 class="success-title">Wait confirmation</h2>
+        <div class="success-finish"><i class="el-icon-more"></i></div>
+        <h2 class="success-title">Documents are being processed</h2>
         <div class="label center finish-description">Verification proccess make take up to 24 hours and you will notify about status</div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'Finish'
+  name: 'WaitDocument'
 }
 </script>
 
@@ -23,8 +23,8 @@ export default {
         -webkit-border-radius: 50%
         -moz-border-radius: 50%
         border-radius: 50%
-        border: 5px solid #377DFE
-        color: #377DFE
+        border: 5px solid var(--primary-color)
+        color: var(--primary-color)
         margin: 35px auto
         padding: 10px 0
     .success-title

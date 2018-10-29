@@ -1,22 +1,21 @@
 <template>
     <div @keyup.enter="submit('indicatorForm')">
-        <el-form :validateOnRuleChange="false" @submit.prevent.native ref="indicatorForm" :rules="indicatorFormRules" :model="form">
+        <el-form :validateOnRuleChange="false" @submit.prevent.native ref="indicatorForm" :model="form">
             <el-form-item class="pledge input-with-button">
                 <slot name="label"><div class="uppercase label">Crowdsales starts in</div></slot>
                 <VCountDownDate :date="indicatorDate"/>
             </el-form-item>
             <div class="divider"></div>
-            <el-form-item class="pledge input-with-button"
-              prop="pledge">
+            <el-form-item
+                :rules="[
+                    { required: true, message: 'Please enter pladge', trigger: 'blur' },
+                ]"
+                class="pledge input-with-button" prop="pledge">
                 <slot name="label"><div class="uppercase label">How much you plan pladge?</div></slot>
                 <el-input autofocus="true" type="number" v-model="form.pledge">
-                    <el-select :default-first-option="true" class="currency" v-model="form.currency" slot="append">
-                       <el-option
-                            v-for="currency in currencies"
-                            :key="currency.symbol"
-                            :label="currency.symbol"
-                            :value="currency.symbol"></el-option>
-                    </el-select>
+                    <div class="currency-prefix bold" slot="prefix">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
                 </el-input>
             </el-form-item>
 
@@ -32,7 +31,7 @@
 </template>
 
 <script>
-import { map, propEq, find, nth, path, prop } from 'ramda'
+import { nth, path } from 'ramda'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import VCountDownDate from '@/components/CountDownDate'
@@ -77,40 +76,6 @@ export default {
     indicatorDate: function () {
       let startDate = this.airpay.settings.startDate
       return moment(startDate, 'DD/MM/YYYY').toDate()
-    },
-    currencies: function () {
-      let assetAccept = this.airpay.settings.assetAccept
-      return map(currency => {
-        return {
-          symbol: currency.asset.symbol,
-          rate: currency.rate,
-          min: currency.minAmount
-        }
-      }, assetAccept)
-    },
-    indicatorFormRules: function () {
-      let currentCurrency = find(propEq('symbol', this.form.currency), this.currencies)
-      let checkZero = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('Amount is required'))
-        } else if (value < currentCurrency.min) {
-          callback(new Error(`Amount can not be less then ${currentCurrency.min}`))
-        } else {
-          callback()
-        }
-      }
-      return {
-        pledge: [
-          {
-            validator: checkZero,
-            trigger: ['submit', 'blur']
-          }
-        ]
-      }
-    },
-    getSum: function () {
-      let rate = prop('rate', find(propEq('symbol', this.form.currency), this.currencies))
-      return parseFloat(rate) * parseFloat(this.form.pledge)
     }
   },
   components: {
@@ -127,4 +92,10 @@ export default {
     .pledge
         .currency
             width: 90px
+    .currency-prefix
+        height: 100%
+        font-size: 16px
+        color: #000
+        padding: 5px 10px
+
 </style>
