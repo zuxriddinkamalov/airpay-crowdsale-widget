@@ -31,60 +31,60 @@
 </template>
 
 <script>
-import { nth, path } from 'ramda';
-import { mapState } from 'vuex';
-import moment from 'moment';
-import VCountDownDate from '@/components/CountDownDate';
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types';
-import { prepareValidateErrors } from '../../../helpers/general';
+import { nth, path } from 'ramda'
+import { mapState } from 'vuex'
+import moment from 'moment'
+import VCountDownDate from '@/components/CountDownDate'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { prepareValidateErrors } from '../../../helpers/general'
 
 export default {
   name: 'StartIndicator',
-  data: function() {
+  data: function () {
     return {
       form: {
         pledge: null,
         currency: null
       }
-    };
+    }
   },
-  mounted() {
+  mounted () {
     this.form.currency = path(
       ['asset', 'symbol'],
       nth(0, this.airpay.settings.assetAccept)
-    );
+    )
   },
   methods: {
-    submit: function(formName) {
+    submit: function (formName) {
       if (this.loading) {
-        return;
+        return
       }
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum');
+          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
         } else {
-          let message = prepareValidateErrors(error);
+          let message = prepareValidateErrors(error)
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          });
-          return false;
+          })
+          return false
         }
-      });
+      })
     }
   },
   computed: {
     ...mapState(['airpay']),
-    indicatorDate: function() {
-      let startDate = this.airpay.settings.startDate;
-      return moment(startDate, 'DD/MM/YYYY').toDate();
+    indicatorDate: function () {
+      let startDate = this.airpay.settings.startDate
+      return moment(startDate, 'DD/MM/YYYY').toDate()
     }
   },
   components: {
     VCountDownDate
   }
-};
+}
 </script>
 
 <style lang="sass">

@@ -2,6 +2,7 @@
     <div class="body">
         <el-container class="container">
             <v-header
+                v-if="title || logo"
                 :logo="logo"
                 :title="title"
             />
@@ -34,6 +35,7 @@ import VWait from './Wait';
 import VWaitDocument from './WaitDocument';
 import VCrowdsaleReached from './CrowdsaleReached';
 import VFinish from './Finish';
+import VError from './Error';
 
 import {
   SET_ACTIVE_TAB,
@@ -56,16 +58,16 @@ export default {
     ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
     logo() {
-      return (
-        path(['settings', 'business', 'logo'], this.settings) ||
-        'images/no-logo.png'
-      );
+      return path(['settings', 'business', 'logo'], this.settings);
     },
     title() {
       return path(['settings', 'name'], this.settings);
     }
   },
   mounted() {
+    if (!this.settings.settings) {
+      return this.$store.commit(SET_STEP, 0);
+    }
     let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY');
     let endDate = moment(this.settings.settings.endDate, 'DD/MM/YYYY');
     if (startDate.diff(moment()) > 0) {
@@ -80,6 +82,7 @@ export default {
   watch: {
     networkError(newValue, oldValue) {
       let message = prepareNetworkErrors(newValue);
+      this.$store.commit(SET_ACTIVE_TAB, 'VError');
       this.$message({
         dangerouslyUseHTMLString: true,
         type: 'error',
@@ -106,6 +109,7 @@ export default {
     VFinish,
     VWaitDocument,
     VCrowdsaleReached,
+    VError,
     VWait
   }
 };
@@ -145,8 +149,8 @@ export default {
         letter-spacing: 0.76px
     .label
         font-family: SourceSansPro-Regular, sans-serif
-        font-size: 15px
-        color: #444
+        font-size: 14px
+        color: #777777
         letter-spacing: 1.33px
     .input-button
         padding: 0 10px

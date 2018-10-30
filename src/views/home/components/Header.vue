@@ -1,14 +1,14 @@
 <template>
     <el-header class="header">
         <div class="logo" :style="{
-            background: `url(${logo})`,
+            background: `url(${logo || 'images/no-logo.png'})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundColor: '#fff'
         }">
         </div>
-        <div class="title">
+        <div v-if="title" class="title">
             <h4>{{title}}</h4>
         </div>
     </el-header>
@@ -23,11 +23,10 @@ export default {
       required: true
     },
     title: {
-      type: String,
-      required: true
+      type: String
     }
   }
-};
+}
 </script>
 
 <style lang="sass" scoped>
