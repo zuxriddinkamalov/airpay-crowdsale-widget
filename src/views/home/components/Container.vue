@@ -181,7 +181,7 @@ export default {
             max-width: 500px
             margin: auto
             background: #fff
-            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.2)
+            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.15)
             border-radius: 5px
             flex-wrap: wrap
             .main
