@@ -2,7 +2,7 @@
     <div @keyup.enter="submit('indicatorForm')">
         <el-form :validateOnRuleChange="false" @submit.prevent.native ref="indicatorForm" :model="form">
             <el-form-item class="pledge input-with-button">
-                <slot name="label"><div class="uppercase label">Crowdsale starts in</div></slot>
+                <slot name="label"><div class="uppercase label bold">Crowdsale starts in</div></slot>
                 <VCountDownDate :date="indicatorDate"/>
             </el-form-item>
             <div class="divider"></div>
@@ -11,7 +11,7 @@
                     { required: true, message: 'Please enter pladge amount', trigger: 'blur' },
                 ]"
                 class="pledge input-with-button" prop="pledge">
-                <slot name="label"><div class="uppercase label">How much you plan pladge?</div></slot>
+                <slot name="label"><div class="uppercase label bold">How much you plan pladge?</div></slot>
                 <el-input autofocus="true" type="number" v-model="form.pledge">
                     <div class="currency-prefix bold" slot="prefix">
                         <i class="fas fa-dollar-sign"></i>
@@ -35,7 +35,7 @@ import { nth, path } from 'ramda'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import VCountDownDate from '@/components/CountDownDate'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
 
 export default {
@@ -61,7 +61,8 @@ export default {
       }
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+          this.$store.commit(SET_STEP, 2)
+          this.$store.commit(SET_ACTIVE_TAB, 'VAuthorization')
         } else {
           let message = prepareValidateErrors(error)
           this.$message({

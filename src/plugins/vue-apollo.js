@@ -14,12 +14,33 @@ import VueApollo from 'vue-apollo'
 import { createUploadLink } from 'apollo-upload-client'
 import { onError } from 'apollo-link-error'
 import { ApolloLink, from } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { SubscriptionClient } from 'subscriptions-transport-ws'
+
 import Store from '@/store'
+import { API_URL, API_WS_URL } from '@/constant/api'
 
-import { API_URL } from '@/constant/api'
+const token = sessionStorage.getItem('token')
 
+const hasSubscriptionOperation = ({ query: { definitions } }) =>
+  definitions.some(
+    ({ kind, operation }) =>
+      kind === 'OperationDefinition' && operation === 'subscription'
+  )
+
+const client = new SubscriptionClient(API_WS_URL, {
+  reconnect: true,
+  connectionCallback: function (error, result) {
+    if (error) {
+      Store.dispatch('graphQLError', error)
+    }
+  }
+})
+
+const wsLink = new WebSocketLink(client)
+
+// eslint-disable-next-line
 const httpLink = new createUploadLink({
-  // You should use an absolute URL here
   uri: API_URL
 })
 
@@ -34,8 +55,6 @@ const checkError = onError(({ graphQLErrors, networkError }) => {
 
 const authLink = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
-  const token = sessionStorage.getItem('token')
-
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
@@ -45,10 +64,10 @@ const authLink = new ApolloLink((operation, forward) => {
 
   return forward(operation)
 })
-
+const links = ApolloLink.split(hasSubscriptionOperation, wsLink, httpLink)
 // Create the apollo client
 const apolloClient = new ApolloClient({
-  link: from([checkError, authLink, httpLink]),
+  link: from([checkError, authLink, links]),
   cache: new InMemoryCache(),
   connectToDevTools: true
 })

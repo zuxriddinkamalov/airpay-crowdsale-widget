@@ -10,5 +10,6 @@ export default {
   loading: false,
   hash: null,
   byTokenData: null,
-  authData: null
+  authData: null,
+  verificationHash: null
 }

@@ -1,19 +1,21 @@
 <template>
     <div class="body">
         <el-container class="container">
-            <v-header
-                v-if="title || logo"
-                :logo="logo"
-                :title="title"
-            />
-            <el-main class="main">
-                <el-steps v-if="step" :active="step" class="step">
-                    <el-step></el-step>
-                    <el-step></el-step>
-                    <el-step></el-step>
-                </el-steps>
-                <component :is="component"></component>
-            </el-main>
+            <div class="container-content">
+                <v-header
+                    v-if="title || logo"
+                    :logo="logo"
+                    :title="title"
+                />
+                <el-main class="main">
+                    <el-steps v-if="step" :active="step" class="step">
+                        <el-step></el-step>
+                        <el-step></el-step>
+                        <el-step></el-step>
+                    </el-steps>
+                    <component :is="component"></component>
+                </el-main>
+            </div>
         </el-container>
     </div>
 </template>
@@ -28,6 +30,7 @@ import VHeader from './Header'
 import VStartIndicator from './StartIndicator'
 import ByTokens from './ByTokens'
 import VEthereum from './Ethereum'
+import VAuthorization from './Authorization'
 import VAgree from './Agreement'
 import VDeposit from './Deposit'
 import VIdentity from './Identity'
@@ -102,6 +105,7 @@ export default {
     VStartIndicator,
     ByTokens,
     VEthereum,
+    VAuthorization,
     VAgree,
     VDeposit,
     VIdentity,
@@ -183,10 +187,13 @@ export default {
         .container
             max-width: 500px
             margin: auto
-            background: #fff
-            box-shadow: 0 4px 14px 0 rgba(0,0,0,0.12)
-            border-radius: 5px
-            flex-wrap: wrap
+            .container-content
+                margin: 50px 0
+                width: 100%
+                background: #fff
+                box-shadow: 0 4px 14px 0 rgba(0,0,0,0.12)
+                border-radius: 5px
+                flex-wrap: wrap
             .main
                 .step
                     margin-bottom: 30px

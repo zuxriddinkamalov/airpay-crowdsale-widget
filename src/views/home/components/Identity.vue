@@ -1,9 +1,8 @@
 <template>
     <div @keyup.enter="submit('identityForm')">
         <el-form @submit.prevent.native :model="form" ref="identityForm">
-            <h3 class="identity-title bold">Identity verification</h3>
+            <h3 class="big-title bold">Identity verification</h3>
             <el-form-item
-                class="docType"
                 prop="docType">
                 <slot name="label"><div class="uppercase label">Select document type</div></slot>
                 <el-select class="document-type" v-model="form.docType">
@@ -17,6 +16,82 @@
                     </el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item
+                prop="docNumber"
+                :rules="[
+                    { required: true, message: 'Please enter document number', trigger: 'blur' },
+                ]">
+                <slot name="label"><div class="uppercase label">Document number</div></slot>
+                <el-input placeholder="Please enter document number" type="number" v-model="form.docNumber"></el-input>
+            </el-form-item>
+            <el-row type="flex" :gutter="15">
+                <el-col :xs="24" :md="12">
+                    <el-form-item
+                        prop="firstName"
+                        :rules="[
+                        { required: true, message: 'Please enter first name', trigger: 'blur' },
+                    ]">
+                        <slot name="label"><div class="uppercase label">First name</div></slot>
+                        <el-input placeholder="Please enter first name" type="email" v-model="form.firstName"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="24" :md="12">
+                    <el-form-item
+                        prop="LastName"
+                        :rules="[
+                            { required: true, message: 'Please enter last name', trigger: 'blur' },
+                        ]">
+                        <slot name="label"><div class="uppercase label">Last name</div></slot>
+                        <el-input placeholder="Please enter last name" type="email" v-model="form.LastName"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-form-item
+                prop="nationality"
+                :rules="[
+                    { required: true, message: 'Please enter nationality', trigger: 'blur' },
+                ]">
+                <slot name="label"><div class="uppercase label">Nationality</div></slot>
+                <el-input placeholder="Please enter nationality" v-model="form.nationality"></el-input>
+            </el-form-item>
+            <el-row type="flex" :gutter="15">
+                <el-col :xs="24" :md="12">
+                    <el-form-item
+                        prop="sex"
+                        :rules="[
+                            { required: true, message: 'Please select gender', trigger: 'blur' },
+                        ]">
+                        <slot name="label"><div class="uppercase label">Sex</div></slot>
+                        <el-select placeholder="Select gender" v-model="form.sex">
+                            <el-option
+                                label="Male"
+                                value="male">
+                            </el-option>
+                            <el-option
+                                label="Female"
+                                value="female">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="24" :md="12">
+                    <el-form-item
+                        label="Date of birth"
+                        prop="birthdDate"
+                        :rules="[
+                            { required: true, message: 'Please enter birth date', trigger: 'blur' },
+                        ]">
+                        <el-date-picker
+                            placeholder="Date of birth"
+                            format="dd/MM/yyyy"
+                            :editable="false"
+                            v-model="form.birthdDate"
+                            type="date">
+                        </el-date-picker>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+
             <el-form-item>
                 <div class="info-tooltip">
                     <span class="uppercase bold">Requirements</span> Please upload only high quality photos for
@@ -29,7 +104,7 @@
                         <el-form-item
                             prop="selfie"
                             :rules="[
-                            { required: true, message: 'Please select selfie file', trigger: 'blur' },
+                            { required: true, message: 'Please select selfie file', trigger: 'change' },
                         ]">
                             <div class="upload" :style="{
                                 backgroundImage: 'url(images/pass.png)'
@@ -67,7 +142,7 @@
                         <el-form-item
                             prop="front"
                             :rules="[
-                            { required: true, message: 'Please select front file', trigger: 'blur' },
+                            { required: true, message: 'Please select front file', trigger: 'change' },
                         ]">
                             <div class="upload" :style="{
                                 backgroundImage: 'url(images/inhand.png)'
@@ -103,6 +178,33 @@
                     </el-col>
                 </el-row>
             </div>
+            <el-form-item>
+                <div>
+                    <span class="big-title bold">Accreditation confirmation</span>
+                    <span class="bold accreditation-title">(for USA nation only)</span>
+                </div>
+                <div class="info-tooltip">
+                    <span class="uppercase bold">Requirements</span>
+                    Please provide as W2 form, or your lawyer document thats confirm your yearly income more than 200K USD
+                </div>
+            </el-form-item>
+            <el-form-item>
+                <el-upload
+                    action="#"
+                    :limit="2"
+                    multiple
+                    :show-file-list="true"
+                    :on-change="(file, fileList) => selectFiles(file, fileList, 'wTwoForm')"
+                    :auto-upload="false">
+                    <el-button
+                        class="upload-button"
+                        slot="trigger"
+                        type="primary"
+                        size="small" round>
+                        <span class="icon"><i class="el-icon-plus"></i></span> Upload (1-2 photos)
+                    </el-button>
+                </el-upload>
+            </el-form-item>
             <el-button
                 :loading="loading"
                 class="button" type="primary"
@@ -114,10 +216,9 @@
 </template>
 
 <script>
-import { prop, path } from 'ramda'
+import { prop, forEach } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
-import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Identity',
@@ -127,7 +228,14 @@ export default {
       form: {
         docType: 'idCard',
         selfie: null,
-        front: null
+        front: null,
+        docNumber: '',
+        firstName: '',
+        lastName: '',
+        nationality: '',
+        sex: '',
+        birthDate: '',
+        wTwoForm: []
       }
     }
   },
@@ -136,28 +244,35 @@ export default {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.loading = true
-          this.$apollo
-            .mutate({
-              mutation: UPLOAD_DOC_MUTATION,
-              variables: {
-                selfie: prop('selfie', this.form),
-                front: prop('front', this.form),
-                docType: prop('docType', this.form)
-              }
-            })
-            .then(response => {
-              let status = path(['data', 'uploadDocs'], response)
-              if (status) {
-                this.$store.commit(SET_STEP, 3)
-                this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
-              } else {
-                this.$message.error('Can`t upload files')
-              }
-              this.loading = false
-            })
-            .catch(response => {
-              this.loading = false
-            })
+
+          this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
+
+          // this.$apollo
+          //   .mutate({
+          //     mutation: UPLOAD_DOC_MUTATION,
+          //     variables: {
+          //       selfie: prop('selfie', this.form),
+          //       front: prop('front', this.form),
+          //       docType: prop('docType', this.form)
+          //     }
+          //   })
+          //   .then(response => {
+          //     let verificationHash = path(['data', 'uploadDocs', 'verificationHash'], response)
+          //     if (verificationHash) {
+          //       this.$store.commit(SET_STEP, 3)
+          //       this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
+          //       this.$store.commit(SET_AIRPAY_STATE, {
+          //         key: 'verificationHash',
+          //         value: verificationHash
+          //       })
+          //     } else {
+          //       this.$message.error('Can`t upload files')
+          //     }
+          //     this.loading = false
+          //   })
+          //   .catch(response => {
+          //     this.loading = false
+          //   })
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
@@ -173,6 +288,13 @@ export default {
       this.form[ref] = null
       this.$refs[ref].clearFiles()
     },
+    selectFiles: function (file, fileList, key) {
+      this.form[key] = []
+      forEach(fileRaw => {
+        let file = prop('raw', fileRaw)
+        this.form[key].push(file)
+      }, fileList)
+    },
     selectFile: function (file, fileList, key) {
       this.form[key] = prop('raw', file)
     }
@@ -183,12 +305,11 @@ export default {
 <style lang="sass">
     .el-select
         width: 100%
-    .identity-title
-        font-size: 24px
-        margin-bottom: 15px
     .document-type *
         font-weight: bold
         font-size: 20px
+    .accreditation-title
+        font-size: 18px
     .photos
         margin: 20px 0
     .upload

@@ -1,6 +1,7 @@
 <template>
-    <div @keyup.enter="submit">
+    <div @keyup.enter="ethereumSubmit">
         <el-form @submit.prevent.native :model="form" :rules="rulesEthereum" ref="recForm">
+            <div class="bold big-title">Your token hold wallet</div>
             <el-form-item
                 prop="withDrawAddress">
                 <slot name="label"><div class="uppercase label">Please enter your recipient address:</div></slot>
@@ -12,62 +13,26 @@
                     fees amount to quickest execution
                 </div>
             </el-form-item>
-            <el-form-item
-                class="email"
-                prop="email">
-                <slot name="label"><div class="uppercase label">Please enter your email</div></slot>
-                <el-input placeholder="Please enter email" type="email" v-model="form.email"></el-input>
-            </el-form-item>
             <el-button
-                v-if="!$R.prop('hash', airpay)"
                 :loading="loading"
                 class="button" type="primary"
-                @click="enterToSystem('recForm')">
-                Proceed
+                @click="ethereumSubmit('recForm')">
+                Get tokens to this address
             </el-button>
         </el-form>
-        <div v-if="$R.prop('hash', airpay)" class="verification">
-            <el-form @submit.prevent.native ref="verificateForm" :model="form">
-                <el-form-item
-                    class="code input-with-button"
-                    prop="code"
-                    :rules="[
-                    { required: true, message: 'Please enter verification code 4 digits', trigger: 'blur' },
-                ]">
-                    <slot name="label">
-                        <div class="uppercase label">Check your email and enter code</div>
-                    </slot>
-                    <el-input pattern="\d*" type="number" placeholder="Verification code" v-model="form.code">
-                        <el-button
-                            @click="enterToSystem('recForm')"
-                            class="input-button"
-                            slot="append"
-                            type="text">Resend</el-button>
-                    </el-input>
-                </el-form-item>
-                <el-button
-                    :loading="loading"
-                    class="button" type="primary"
-                    @click="verificate('verificateForm')">
-                    Authorization
-                </el-button>
-            </el-form>
-        </div>
     </div>
 </template>
 
 <script>
+import { path } from 'ramda'
 import { mapState } from 'vuex'
-import { path, prop } from 'ramda'
 import { isAddress } from 'ethereum-address'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
-import {
-  AUTHORIZATION_MUTATION,
-  ENTER_MUTATION
-} from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
+
 import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
+import { PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
+import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
 
 export default {
   name: 'Ethereum',
@@ -84,57 +49,42 @@ export default {
     return {
       loading: false,
       form: {
-        withDrawAddress: '',
-        email: '',
-        code: ''
+        withDrawAddress: ''
       },
       rulesEthereum: {
-        withDrawAddress: [{ validator: checkEthereum, trigger: 'blur' }],
-        email: [
-          { required: true, message: 'Email required', trigger: 'blur' },
-          {
-            type: 'email',
-            message: 'Please enter valid email',
-            trigger: 'blur'
-          }
-        ]
+        withDrawAddress: [{ validator: checkEthereum, trigger: 'blur' }]
       }
     }
   },
   methods: {
-    submit () {
-      if (this.loading) {
-        return
-      }
-      if (prop('hash', this.airpay)) {
-        this.verificate('verificateForm')
-      } else {
-        this.enterToSystem('recForm')
-      }
-    },
-    enterToSystem (formName) {
+    ethereumSubmit (formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.loading = true
-          this.$apollo
-            .mutate({
-              mutation: ENTER_MUTATION,
-              variables: {
-                email: this.form.email,
-                whitelist: this.$store.state.airpay.settings.whitelist
-              }
+          this.$store.commit(`forms/${SET_FORM_DATA}`, {
+            ...this.$store.state.forms,
+            recipientForm: this.form
+          })
+          this.$apollo.mutate({
+            mutation: PERFORM_BUYING_MUTATION,
+            variables: {
+              amount: path(['byTokenForm', 'pledge'], this.forms),
+              currency: path(['byTokenForm', 'currency'], this.forms),
+              withdrawAddress: path(['recipientForm', 'withDrawAddress'], this.forms),
+              crowdsale: path(['query', 'crowdsale'], this.route)
+            }
+          }).then(response => {
+            let data = path(['data', 'buyTokens'], response)
+            this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+              ...this.$store.state.airpay,
+              byTokenData: data
             })
-            .then(response => {
-              this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-                ...this.$store.state.airpay,
-                hash: path(['data', 'userEnter'], response)
-              })
-              this.loading = false
-            })
-            .catch(response => {
-              this.$message.error(response)
-              this.loading = false
-            })
+            this.$store.commit(SET_STEP, 3)
+            this.$store.commit(SET_ACTIVE_TAB, 'VDeposit')
+            this.loading = false
+          }).catch(response => {
+            this.loading = false
+          })
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
@@ -145,68 +95,14 @@ export default {
           return false
         }
       })
-    },
-    verificate (formName) {
-      let self = this
-      let enter = new Promise(function (resolve, reject) {
-        self.$refs['recForm'].validate((valid, error) => {
-          if (valid) {
-            resolve()
-          } else {
-            let message = prepareValidateErrors(error)
-            self.$message({
-              dangerouslyUseHTMLString: true,
-              type: 'error',
-              message: message
-            })
-          }
-        })
-      })
-      let verification = new Promise(function (resolve, reject) {
-        self.$refs[formName].validate((valid, error) => {
-          if (valid) {
-            resolve()
-          }
-        })
-      })
-      Promise.all([enter, verification]).then(function () {
-        self.loading = true
-        self.$apollo
-          .mutate({
-            mutation: AUTHORIZATION_MUTATION,
-            variables: {
-              hash: prop('hash', self.airpay),
-              code: prop('code', self.form)
-            }
-          })
-          .then(response => {
-            let data = path(['data', 'userAuth'], response)
-            let isWhitelisted = path(['data', 'userAuth', 'isWhitelisted'], response)
-            sessionStorage.setItem('token', prop('authorization', data))
-            self.$store.commit(`forms/${SET_FORM_DATA}`, {
-              ...self.$store.state.forms,
-              recipientForm: self.form
-            })
-            self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...self.$store.state.airpay,
-              authData: data
-            })
-            self.$store.commit(SET_STEP, 2)
-            if (isWhitelisted) {
-              self.$store.commit(SET_ACTIVE_TAB, 'VAgree')
-            } else {
-              self.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
-            }
-            self.loading = false
-          })
-          .catch(response => {
-            self.loading = false
-          })
-      })
     }
   },
   computed: {
-    ...mapState(['airpay'])
+    ...mapState([
+      'airpay',
+      'forms',
+      'route'
+    ])
   }
 }
 </script>

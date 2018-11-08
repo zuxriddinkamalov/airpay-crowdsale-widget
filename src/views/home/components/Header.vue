@@ -50,7 +50,7 @@ export default {
             margin: 0 auto
             background: #FFFFFF
             border: 3px solid #FFFFFF
-            box-shadow: 0px 0px 3px 1px rgba(220,220,220,0.40)
+            box-shadow: 0 0 3px 1px rgba(220,220,220,0.40)
         .title
             margin-top: 14px
             text-align: center

@@ -1,12 +1,13 @@
 <template>
     <div>
+        <h3 class="big-title bold">Agreement</h3>
         <div class="agreement" @scroll="readAgreement">
             {{ $R.path(['settings', 'agreement'], airpay) }}
         </div>
         <el-button
             :loading="loading"
             class="button" type="primary"
-            @click="buyTokens">
+            @click="imAgree">
             Yes, I'm agree with this terms
         </el-button>
     </div>
@@ -15,9 +16,7 @@
 <script>
 import { mapState } from 'vuex'
 import { path } from 'ramda'
-import { PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'Agreement',
@@ -33,35 +32,18 @@ export default {
       // scrollHeight
       // clientHeight
     },
-    buyTokens: function () {
-      this.loading = true
-      this.$apollo.mutate({
-        mutation: PERFORM_BUYING_MUTATION,
-        variables: {
-          amount: path(['byTokenForm', 'pledge'], this.forms),
-          currency: path(['byTokenForm', 'currency'], this.forms),
-          withdrawAddress: path(['recipientForm', 'withDrawAddress'], this.forms),
-          crowdsale: path(['query', 'crowdsale'], this.route)
-        }
-      }).then(response => {
-        let data = path(['data', 'buyTokens'], response)
-        this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-          ...this.$store.state.airpay,
-          byTokenData: data
-        })
-        this.$store.commit(SET_STEP, 3)
-        this.$store.commit(SET_ACTIVE_TAB, 'VDeposit')
-        this.loading = false
-      }).catch(response => {
-        this.loading = false
-      })
+    imAgree: function () {
+      let isWhitelisted = path(['airpay', 'authData', 'isWhitelisted'], this.authData)
+      if (isWhitelisted) {
+        this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+      } else {
+        this.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
+      }
     }
   },
   computed: {
     ...mapState([
-      'airpay',
-      'forms',
-      'route'
+      'airpay'
     ])
   }
 }

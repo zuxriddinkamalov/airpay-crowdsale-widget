@@ -31,7 +31,6 @@ export const SETTINGS_MUTATION = gql`
         minAmount
         rate
       }
-      whitelist
       endDate
       startDate
     }
@@ -80,6 +79,8 @@ export const WITHDRAW_TOKENS_MUTATION = gql`
 
 export const UPLOAD_DOC_MUTATION = gql`
   mutation($selfie: Upload!, $front: Upload!, $docType: String!) {
-    uploadDocs(selfie: $selfie, front: $front, docType: $docType)
+    uploadDocs(selfie: $selfie, front: $front, docType: $docType) {
+      verificationHash
+    }
   }
 `
