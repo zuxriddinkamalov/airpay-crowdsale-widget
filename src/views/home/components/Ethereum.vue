@@ -74,6 +74,7 @@ export default {
               crowdsale: path(['query', 'crowdsale'], this.route)
             }
           }).then(response => {
+            console.warn(response)
             let data = path(['data', 'buyTokens'], response)
             this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
               ...this.$store.state.airpay,

@@ -242,10 +242,10 @@ export default {
   methods: {
     submit (formName) {
       this.$refs[formName].validate((valid, error) => {
+        this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
+
         if (valid) {
           this.loading = true
-
-          this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
 
           // this.$apollo
           //   .mutate({

@@ -29,8 +29,7 @@ export default {
         scan((total, change) => total - 1),
         map(val => {
           if (val === 0) {
-            sessionStorage.removeItem('token')
-            location.reload()
+
           }
           return val
         })

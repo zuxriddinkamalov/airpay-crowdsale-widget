@@ -130,7 +130,7 @@ export default {
             ...this.$store.state.form,
             byTokenForm: this.form
           })
-          this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+          this.$store.commit(SET_ACTIVE_TAB, 'VAuthorization')
           this.$store.commit(SET_STEP, 2)
         } else {
           let message = prepareValidateErrors(error)
