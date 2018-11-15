@@ -12,6 +12,10 @@ import { startWith, scan, take, map } from 'rxjs/operators'
 
 export default {
   props: {
+    trigger: {
+      type: Function,
+      required: true
+    },
     minute: {
       type: Number,
       required: true
@@ -22,6 +26,7 @@ export default {
   },
   subscriptions () {
     let seconds = this.minute * 60
+    let self = this
     return {
       counter: interval(1000).pipe(
         take(seconds),
@@ -29,7 +34,7 @@ export default {
         scan((total, change) => total - 1),
         map(val => {
           if (val === 0) {
-
+            self.trigger()
           }
           return val
         })
@@ -38,6 +43,9 @@ export default {
   },
   computed: {
     getPercent: function () {
+      if (this.minute === 0) {
+        return 0
+      }
       return (this.counter / (this.minute * 60)) * 100
     }
   },
@@ -61,6 +69,9 @@ export default {
 <style lang="sass" scoped>
     .timer-container
         position: relative
+        width: 120px
+        height: 120px
+        text-align: center
         .timer
             position: absolute
             top: 40px

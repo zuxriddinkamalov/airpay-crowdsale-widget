@@ -8,8 +8,7 @@
                 :words="sliderText"></vue-swimlane>
         </div>
         <el-form :validateOnRuleChange="false" @submit.prevent.native ref="buyTokenForm" :rules="rulesByToken" :model="form">
-            <el-form-item class="pledge input-with-button"
-              prop="pledge">
+            <el-form-item class="pledge input-with-button" prop="pledge">
                 <slot name="label"><div class="uppercase label">You pledge</div></slot>
                 <el-input autofocus="true" type="number" v-model="form.pledge">
                     <el-select :default-first-option="true" class="currency" v-model="form.currency" slot="append">
@@ -52,6 +51,20 @@
                 </el-row>
             </el-form-item>
 
+            <div v-if="$R.equals(time, 0)">
+                <el-form-item>
+                    <div class="info-tooltip time-over">
+                        <h4 class="bold uppercase">Attention</h4>
+                        <p>If you don't have time have time to make deposit right now you can easy make it comfort time for you</p>
+                    </div>
+                </el-form-item>
+                <el-button
+                        class="button" type="primary"
+                        @click="giveMeTime">
+                    Add me +1 hour for deposit
+                </el-button>
+            </div>
+
             <div class="">
                 <el-button
                     class="button" type="primary"
@@ -70,6 +83,7 @@ import '@/plugins/vue-swimline'
 import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
 import { prepareValidateErrors } from '../../../helpers/general'
 import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
+import CountDownTimer from '@/components/CountDownTimer'
 
 const SLIDER = [
   {
@@ -104,7 +118,8 @@ export default {
       form: {
         pledge: null,
         currency: null
-      }
+      },
+      time: 0.3
     }
   },
   mounted () {
@@ -120,6 +135,12 @@ export default {
     }
   },
   methods: {
+    timeOver: function () {
+      this.time = 0
+    },
+    giveMeTime: function () {
+      this.time = 0.3
+    },
     submit: function (formName) {
       if (this.loading) {
         return
@@ -190,12 +211,17 @@ export default {
       let rate = prop('rate', find(propEq('symbol', this.form.currency), this.currencies))
       return parseFloat(rate) * parseFloat(this.form.pledge)
     }
+  },
+  components: {
+    CountDownTimer
   }
 }
 </script>
 
 <style lang="sass">
     $BASE_COLOR: #565656
+    .time-over
+        background-color: #FEF5E7!important
     .flag
         max-width: 20px
         margin-right: 10px

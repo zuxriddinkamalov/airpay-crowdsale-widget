@@ -42,9 +42,6 @@ export const AUTHORIZATION_MUTATION = gql`
   mutation($hash: String!, $code: Int!) {
     userAuth(hash: $hash, code: $code) {
       authorization
-      user {
-        email
-      }
       isWhitelisted
     }
   }
@@ -78,9 +75,21 @@ export const WITHDRAW_TOKENS_MUTATION = gql`
 `;
 
 export const UPLOAD_DOC_MUTATION = gql`
-  mutation($selfie: Upload!, $front: Upload!, $docType: String!) {
-    uploadDocs(selfie: $selfie, front: $front, docType: $docType) {
-      verificationHash
-    }
+  mutation uploadDocs(
+    $selfie: Upload!
+    $front: Upload!
+    $docType: String!
+    $input: uploadInput!
+    $usaDocOne: Upload!
+    $usaDocTwo: Upload!
+  ) {
+    uploadDocs(
+      selfie: $selfie
+      front: $front
+      docType: $docType
+      input: $input
+      usaDocOne: $usaDocOne
+      usaDocTwo: $usaDocTwo
+    )
   }
 `;

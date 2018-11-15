@@ -8,21 +8,29 @@
                 <el-select class="document-type" v-model="form.docType">
                     <el-option
                         label="ID Card"
-                        value="idCard">
+                        value="id_card">
                     </el-option>
                     <el-option
-                        label="Passport"
-                        value="passport">
+                        label="Driver license"
+                        value="driver_license">
+                    </el-option>
+                    <el-option
+                        label="International passport"
+                        value="international_passport">
+                    </el-option>
+                    <el-option
+                        label="USA inv accreditation proofs"
+                        value="usa_inv_accreditation_proofs">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item
-                prop="docNumber"
+                prop="documentNumber"
                 :rules="[
                     { required: true, message: 'Please enter document number', trigger: 'blur' },
                 ]">
                 <slot name="label"><div class="uppercase label">Document number</div></slot>
-                <el-input placeholder="Please enter document number" type="number" v-model="form.docNumber"></el-input>
+                <el-input placeholder="Please enter document number" type="number" v-model="form.documentNumber"></el-input>
             </el-form-item>
             <el-row type="flex" :gutter="15">
                 <el-col :xs="24" :md="12">
@@ -52,7 +60,14 @@
                     { required: true, message: 'Please enter nationality', trigger: 'blur' },
                 ]">
                 <slot name="label"><div class="uppercase label">Nationality</div></slot>
-                <el-input placeholder="Please enter nationality" v-model="form.nationality"></el-input>
+                <el-select placeholder="Select nationality" v-model="form.nationality">
+                    <el-option
+                        v-for="country in countryList"
+                        :label="country.name"
+                        :key="country.country_code"
+                        :value="country.alpha_3">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-row type="flex" :gutter="15">
                 <el-col :xs="24" :md="12">
@@ -77,7 +92,7 @@
                 <el-col :xs="24" :md="12">
                     <el-form-item
                         label="Date of birth"
-                        prop="birthdDate"
+                        prop="birth"
                         :rules="[
                             { required: true, message: 'Please enter birth date', trigger: 'blur' },
                         ]">
@@ -85,7 +100,7 @@
                             placeholder="Date of birth"
                             format="dd/MM/yyyy"
                             :editable="false"
-                            v-model="form.birthdDate"
+                            v-model="form.birth"
                             type="date">
                         </el-date-picker>
                     </el-form-item>
@@ -178,33 +193,35 @@
                     </el-col>
                 </el-row>
             </div>
-            <el-form-item>
-                <div>
-                    <span class="big-title bold">Accreditation confirmation</span>
-                    <span class="bold accreditation-title">(for USA nation only)</span>
-                </div>
-                <div class="info-tooltip">
-                    <span class="uppercase bold">Requirements</span>
-                    Please provide as W2 form, or your lawyer document thats confirm your yearly income more than 200K USD
-                </div>
-            </el-form-item>
-            <el-form-item>
-                <el-upload
-                    action="#"
-                    :limit="2"
-                    multiple
-                    :show-file-list="true"
-                    :on-change="(file, fileList) => selectFiles(file, fileList, 'wTwoForm')"
-                    :auto-upload="false">
-                    <el-button
-                        class="upload-button"
-                        slot="trigger"
-                        type="primary"
-                        size="small" round>
-                        <span class="icon"><i class="el-icon-plus"></i></span> Upload (1-2 photos)
-                    </el-button>
-                </el-upload>
-            </el-form-item>
+            <div v-if="$R.equals('USA', form.nationality)">
+                <el-form-item>
+                    <div>
+                        <span class="big-title bold">Accreditation confirmation</span>
+                        <span class="bold accreditation-title">(for USA nation only)</span>
+                    </div>
+                    <div class="info-tooltip">
+                        <span class="uppercase bold">Requirements</span>
+                        Please provide as W2 form, or your lawyer document thats confirm your yearly income more than 200K USD
+                    </div>
+                </el-form-item>
+                <el-form-item>
+                    <el-upload
+                        action="#"
+                        :limit="2"
+                        multiple
+                        :show-file-list="true"
+                        :on-change="(file, fileList) => selectFiles(file, fileList, 'wTwoForm')"
+                        :auto-upload="false">
+                        <el-button
+                            class="upload-button"
+                            slot="trigger"
+                            type="primary"
+                            size="small" round>
+                            <span class="icon"><i class="el-icon-plus"></i></span> Upload (1-2 photos)
+                        </el-button>
+                    </el-upload>
+                </el-form-item>
+            </div>
             <el-button
                 :loading="loading"
                 class="button" type="primary"
@@ -216,25 +233,28 @@
 </template>
 
 <script>
-import { prop, forEach } from 'ramda'
+import { prop, forEach, path, equals } from 'ramda'
 import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
+import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
+import { SET_AIRPAY_STATE } from '../../../store/modules/airpay/mutation-types'
 
 export default {
   name: 'Identity',
   data: function () {
     return {
       loading: false,
+      countryList: require('@/constant/country-list.json'),
       form: {
-        docType: 'idCard',
+        docType: 'id_card',
         selfie: null,
         front: null,
-        docNumber: '',
+        documentNumber: '',
         firstName: '',
         lastName: '',
         nationality: '',
         sex: '',
-        birthDate: '',
+        birth: '',
         wTwoForm: []
       }
     }
@@ -242,37 +262,47 @@ export default {
   methods: {
     submit (formName) {
       this.$refs[formName].validate((valid, error) => {
-        this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
-
         if (valid) {
+          let uploadData = {
+            selfie: this.form.selfie,
+            front: this.form.front,
+            docType: this.form.docType,
+            input: {
+              documentNumber: this.form.documentNumber,
+              firstName: this.form.firstName,
+              lastName: this.form.lastName,
+              nationality: this.form.nationality,
+              sex: this.form.sex,
+              birth: this.form.birth
+            }
+          }
+          if (equals('USA', this.form.nationality)) {
+            [uploadData.usaDocOne, uploadData.usaDocTwo] = this.form.wTwoForm
+          }
+          console.warn(uploadData)
           this.loading = true
-
-          // this.$apollo
-          //   .mutate({
-          //     mutation: UPLOAD_DOC_MUTATION,
-          //     variables: {
-          //       selfie: prop('selfie', this.form),
-          //       front: prop('front', this.form),
-          //       docType: prop('docType', this.form)
-          //     }
-          //   })
-          //   .then(response => {
-          //     let verificationHash = path(['data', 'uploadDocs', 'verificationHash'], response)
-          //     if (verificationHash) {
-          //       this.$store.commit(SET_STEP, 3)
-          //       this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
-          //       this.$store.commit(SET_AIRPAY_STATE, {
-          //         key: 'verificationHash',
-          //         value: verificationHash
-          //       })
-          //     } else {
-          //       this.$message.error('Can`t upload files')
-          //     }
-          //     this.loading = false
-          //   })
-          //   .catch(response => {
-          //     this.loading = false
-          //   })
+          this.$apollo
+            .mutate({
+              mutation: UPLOAD_DOC_MUTATION,
+              variables: uploadData
+            })
+            .then(response => {
+              let verificationHash = path(['data', 'uploadDocs', 'verificationHash'], response)
+              if (verificationHash) {
+                this.$store.commit(SET_STEP, 3)
+                this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
+                this.$store.commit(SET_AIRPAY_STATE, {
+                  key: 'verificationHash',
+                  value: verificationHash
+                })
+              } else {
+                this.$message.error('Can`t upload files')
+              }
+              this.loading = false
+            })
+            .catch(response => {
+              this.loading = false
+            })
         } else {
           let message = prepareValidateErrors(error)
           this.$message({
