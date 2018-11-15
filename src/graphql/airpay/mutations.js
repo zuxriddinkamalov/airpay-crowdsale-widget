@@ -1,16 +1,16 @@
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
 
 //  Enter
 export const ENTER_MUTATION = gql`
   mutation($email: String!, $whitelist: ID!) {
     userEnter(email: $email, whitelist: $whitelist)
   }
-`
+`;
 
 //  Get widget settings
 export const SETTINGS_MUTATION = gql`
   query($crowdsale: ID!) {
-    getCrowdsale(crowdsale: $crowdsale){
+    getCrowdsale(crowdsale: $crowdsale) {
       name
       hardcap
       whitelist
@@ -18,7 +18,7 @@ export const SETTINGS_MUTATION = gql`
         symbol
         name
       }
-      business {
+      organization {
         id
         logo
         name
@@ -35,20 +35,20 @@ export const SETTINGS_MUTATION = gql`
       startDate
     }
   }
-`
+`;
 
 // Authorization
 export const AUTHORIZATION_MUTATION = gql`
   mutation($hash: String!, $code: Int!) {
     userAuth(hash: $hash, code: $code) {
       authorization
-       user {
-         email
-       }
-       isWhitelisted
+      user {
+        email
+      }
+      isWhitelisted
     }
   }
-`
+`;
 
 // Perform buying
 export const PERFORM_BUYING_MUTATION = gql`
@@ -69,13 +69,13 @@ export const PERFORM_BUYING_MUTATION = gql`
       currency
     }
   }
-`
+`;
 
 export const WITHDRAW_TOKENS_MUTATION = gql`
   mutation($address: String!) {
     withdrawTokens(address: $address)
   }
-`
+`;
 
 export const UPLOAD_DOC_MUTATION = gql`
   mutation($selfie: Upload!, $front: Upload!, $docType: String!) {
@@ -83,4 +83,4 @@ export const UPLOAD_DOC_MUTATION = gql`
       verificationHash
     }
   }
-`
+`;
