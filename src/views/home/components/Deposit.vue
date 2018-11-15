@@ -32,7 +32,7 @@
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">Time for transaction</div></slot>
                         <div class="timer">
-                            <CountDownTimer :color="proccessColor" :minute="5" />
+                            <CountDownTimer :color="proccessColor" :minute="time" :trigger="timeOwer" />
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -43,11 +43,19 @@
                     </el-col>
                 </el-row>
             </el-form-item>
-            <el-button
-                class="button" type="primary"
-                @click="paymentDone">
-                Payment done!
-            </el-button>
+            <div v-if="$R.equals(time, 0)">
+                <el-form-item>
+                    <div class="info-tooltip time-over">
+                        <h4 class="bold uppercase">Attention</h4>
+                        <p>If you don't have time have time to make deposit right now you can easy make it comfort time for you</p>
+                    </div>
+                </el-form-item>
+                <el-button
+                    class="button" type="primary"
+                    @click="giveMeTime">
+                    Add me +1 hour for deposit
+                </el-button>
+            </div>
         </el-form>
     </div>
 </template>
@@ -63,11 +71,15 @@ export default {
   data: function () {
     return {
       form: {
-        address: ''
+        address: '',
+        time: 1
       }
     }
   },
   methods: {
+    timeOver: function () {
+      this.time = 0
+    },
     copySuccess: function () {
       this.$message({
         message: 'Successfully copied',
@@ -82,6 +94,9 @@ export default {
       // } else {
       //   this.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
       // }
+    },
+    giveMeTime: function () {
+      this.time = 1
     }
   },
   computed: {
@@ -100,6 +115,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+    .time-over
+        background-color: #FEF5E7!important
     .label-text
         color: #000
         font-size: 18px

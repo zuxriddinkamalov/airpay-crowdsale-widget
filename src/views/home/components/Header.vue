@@ -19,7 +19,6 @@ export default {
   name: 'Header',
   props: {
     logo: {
-      type: String,
       required: true
     },
     title: {
