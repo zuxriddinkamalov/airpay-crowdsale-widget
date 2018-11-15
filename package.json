@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./server.js",
+    "start": "node server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "postinstall": "npm install express"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.7",
@@ -52,6 +52,7 @@
     "express": "^4.16.4",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
+    "serve-static": "^1.13.2",
     "vue-template-compiler": "^2.5.17"
   }
 }
