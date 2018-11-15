@@ -22,6 +22,7 @@
     "apollo-link-http": "^1.5.5",
     "apollo-link-ws": "^1.0.9",
     "apollo-upload-client": "^8.1.0",
+    "express": "^4.16.4",
     "element-ui": "^2.4.7",
     "ethereum-address": "0.0.4",
     "font-awesome": "^4.7.0",
