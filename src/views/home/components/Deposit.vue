@@ -95,7 +95,7 @@ export default {
           let status = path(['data', 'txChange', 'status'], response)
           switch (status) {
             case 'PROCESS':
-              this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+              this.success = true
               break
             default:
               this.$store.commit(SET_ACTIVE_TAB, 'VError')

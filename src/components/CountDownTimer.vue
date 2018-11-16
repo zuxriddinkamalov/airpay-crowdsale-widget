@@ -101,6 +101,7 @@ export default {
         position: relative
         width: 120px
         height: 120px
+        margin: 0 auto
         text-align: center
         i
             font-weight: bold
