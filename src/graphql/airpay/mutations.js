@@ -62,8 +62,7 @@ export const PERFORM_BUYING_MUTATION = gql`
       crowdsale: $crowdsale
     ) {
       address
-      amount
-      asset
+      txHash
     }
   }
 `
@@ -97,5 +96,12 @@ export const UPLOAD_DOC_MUTATION = gql`
 export const TEST_SET_VERIFY_STATUS = gql`
   mutation setVerifyStatus($verifiedHash: String!, $status: String!) {
     setVerifyStatus(verifiedHash: $verifiedHash, status: $status)
+  }
+`
+
+// ONLY FOR TESTING
+export const TEST_TXT_STATUS_CHANGE = gql`
+  mutation notifyTxStatusChange($txHash: String!) {
+    notifyTxStatusChange(txHash: $txHash)
   }
 `

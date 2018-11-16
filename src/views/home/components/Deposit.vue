@@ -1,5 +1,5 @@
 <template>
-    <div @keyup.enter="paymentDone">
+    <div>
         <el-form @submit.prevent.native :model="form">
             <el-form-item class="input-with-button">
                 <slot name="label">
@@ -32,7 +32,7 @@
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">Time for transaction</div></slot>
                         <div class="timer">
-                            <CountDownTimer :color="proccessColor" :minute="time" :trigger="timeOver" />
+                            <CountDownTimer :success="success" :color="proccessColor" :minute="time" :trigger="timeOver" />
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -62,9 +62,14 @@
 
 <script>
 import { mapState } from 'vuex'
+import { path } from 'ramda'
 
 import CountDownTimer from '@/components/CountDownTimer'
 import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import {
+  TX_CHANGES_SUBSCRIPTION
+} from '../../../graphql/airpay/subscriptions'
+import { TEST_TXT_STATUS_CHANGE } from '../../../graphql/airpay/mutations'
 
 export default {
   name: 'Deposit',
@@ -73,8 +78,49 @@ export default {
       form: {
         address: ''
       },
-      time: 1
+      time: 1,
+      success: false
     }
+  },
+  apollo: {
+    $subscribe: {
+      verificationStatus: {
+        query: TX_CHANGES_SUBSCRIPTION,
+        variables: function () {
+          return {
+            txHash: this.airpay.byTokenData.txHash
+          }
+        },
+        result (response) {
+          let status = path(['data', 'txChange', 'status'], response)
+          switch (status) {
+            case 'PROCESS':
+              this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+              break
+            default:
+              this.$store.commit(SET_ACTIVE_TAB, 'VError')
+              break
+          }
+        }
+      }
+    }
+  },
+  mounted () {
+    let self = this
+    setTimeout(() => {
+      self.$apollo
+        .mutate({
+          mutation: TEST_TXT_STATUS_CHANGE,
+          variables: {
+            txHash: self.airpay.byTokenData.txHash
+          }
+        })
+        .then(response => {
+        })
+        .catch(response => {
+          console.warn('error')
+        })
+    }, 2000)
   },
   methods: {
     timeOver: function () {

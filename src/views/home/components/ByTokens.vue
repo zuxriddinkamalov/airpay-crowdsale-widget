@@ -51,24 +51,6 @@
                 </el-row>
             </el-form-item>
 
-            <!--<el-form-item>
-                <CountDownTimer color="#00ff00" :minute="time" :trigger="timeOver"/>
-            </el-form-item>
-
-            <div v-if="$R.equals(time, 0)">
-                <el-form-item>
-                    <div class="info-tooltip time-over">
-                        <h4 class="bold uppercase">Attention</h4>
-                        <p>If you don't have time have time to make deposit right now you can easy make it comfort time for you</p>
-                    </div>
-                </el-form-item>
-                <el-button
-                    class="button" type="primary"
-                    @click="giveMeTime">
-                    Add me +1 hour for deposit
-                </el-button>
-            </div>-->
-
             <div class="">
                 <el-button
                     class="button" type="primary"
@@ -139,12 +121,6 @@ export default {
     }
   },
   methods: {
-    timeOver: function () {
-      this.time = 0
-    },
-    giveMeTime: function () {
-      this.time = 0.3
-    },
     submit: function (formName) {
       if (this.loading) {
         return

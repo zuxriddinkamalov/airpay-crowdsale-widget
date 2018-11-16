@@ -2,7 +2,7 @@
     <div>
         <div class="timer-container">
             <el-progress
-                :class="{'timer-time-over': !counter}"
+                :class="{'timer-time-over':!seconds&&!success}"
                 :color="color"
                 :width="120"
                 :stroke-width="5"
@@ -11,7 +11,7 @@
                 :status="success?'success':''"
                 :percentage="getPercent">
             </el-progress>
-            <div v-if="!success" class="timer">{{counter | prettify}}</div>
+            <div v-if="!success" class="timer">{{seconds | prettify}}</div>
         </div>
     </div>
 </template>
@@ -39,23 +39,33 @@ export default {
       type: String
     }
   },
-  subscriptions () {
-    let seconds = this.minute * 60
-    let success = this.success
-    let self = this
+  data: function () {
     return {
-      counter: interval(1000).pipe(
-        filter(() => !success),
-        take(seconds),
-        startWith(seconds),
-        scan((total, change) => total - 1),
-        map(val => {
-          if (val === 0) {
-            self.trigger()
-          }
-          return val
+      seconds: 0
+    }
+  },
+  watch: {
+    minute: {
+      immediate: true,
+      handler: function (value) {
+        let seconds = value * 60
+        let success = this.success
+        let self = this
+        this.$subscribeTo(interval(1000).pipe(
+          filter(() => !success),
+          take(seconds),
+          startWith(seconds),
+          scan(total => total - 1),
+          map(val => {
+            if (val === 0) {
+              self.trigger()
+            }
+            return val
+          })
+        ), function (seconds) {
+          self.seconds = seconds
         })
-      )
+      }
     }
   },
   computed: {
@@ -66,20 +76,20 @@ export default {
       if (this.minute === 0) {
         return 0
       }
-      return (this.counter / (this.minute * 60)) * 100
+      return (this.seconds / (this.minute * 60)) * 100
     }
   },
   filters: {
     prettify: function (value) {
       let minutes = parseInt(value / 60)
-      let secondes = value % 60
+      let seconds = value % 60
       if (minutes < 10) {
         minutes = '0' + minutes
       }
-      if (secondes < 10) {
-        secondes = '0' + secondes
+      if (seconds < 10) {
+        seconds = '0' + seconds
       }
-      return minutes + ':' + secondes
+      return minutes + ':' + seconds
     }
   },
   name: 'CountDownTimer'

@@ -2,7 +2,7 @@
     <div>
         <div class="success-finish"><i class="el-icon-check"></i></div>
         <h2 class="success-title">Token withdraw in proccess</h2>
-        <div class="label center finish-description">Verification proccess make take up to 24 hours and you will notify about status</div>
+        <div class="label center finish-description">Deposit success</div>
         <el-row :gutter="15">
             <el-col :xs="24" :sm="12">
                 <span class="label uppercase">Share with friends, to make our token popular:</span>

@@ -13,7 +13,7 @@
 <script>
 import { mapState } from 'vuex'
 import { path } from 'ramda'
-import { VERIFICATION_CHANGES_SUBSCRIBTION } from '../../../graphql/airpay/subscriptions'
+import { VERIFICATION_CHANGES_SUBSCRIPTION } from '../../../graphql/airpay/subscriptions'
 import { TEST_SET_VERIFY_STATUS } from '../../../graphql/airpay/mutations'
 import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 
@@ -22,7 +22,7 @@ export default {
   apollo: {
     $subscribe: {
       verificationStatus: {
-        query: VERIFICATION_CHANGES_SUBSCRIBTION,
+        query: VERIFICATION_CHANGES_SUBSCRIPTION,
         variables: function () {
           return {
             verifiedHash: this.airpay.verificationHash
