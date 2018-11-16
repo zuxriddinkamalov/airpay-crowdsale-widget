@@ -30,7 +30,10 @@ const hasSubscriptionOperation = ({ query: { definitions } }) =>
 
 const client = new SubscriptionClient(API_WS_URL, {
   reconnect: true,
-  connectionCallback: function (error, result) {
+  connectionParams: {
+    authorization: token || ''
+  },
+  connectionCallback: function (error) {
     if (error) {
       Store.dispatch('graphQLError', error)
     }

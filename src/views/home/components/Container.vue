@@ -82,22 +82,28 @@ export default {
     }
   },
   watch: {
-    networkError (newValue, oldValue) {
-      let message = prepareNetworkErrors(newValue)
-      this.$store.commit(SET_ACTIVE_TAB, 'VError')
-      this.$message({
-        dangerouslyUseHTMLString: true,
-        type: 'error',
-        message: message
-      })
+    networkError: {
+      deep: true,
+      handler: function (newValue, oldValue) {
+        let message = prepareNetworkErrors(newValue)
+        this.$store.commit(SET_ACTIVE_TAB, 'VError')
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          type: 'error',
+          message: message
+        })
+      }
     },
-    graphQLError (newValue, oldValue) {
-      let message = prepareGraphQLErrors(newValue)
-      this.$message({
-        dangerouslyUseHTMLString: true,
-        type: 'error',
-        message: message
-      })
+    graphQLError: {
+      deep: true,
+      handler: function (newValue, oldValue) {
+        let message = prepareGraphQLErrors(newValue)
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          type: 'error',
+          message: message
+        })
+      }
     }
   },
   components: {

@@ -69,7 +69,7 @@ export default {
             mutation: PERFORM_BUYING_MUTATION,
             variables: {
               amount: path(['byTokenForm', 'pledge'], this.forms),
-              currency: path(['byTokenForm', 'currency'], this.forms),
+              asset: path(['byTokenForm', 'currency'], this.forms),
               withdrawAddress: path(['recipientForm', 'withDrawAddress'], this.forms),
               crowdsale: path(['query', 'crowdsale'], this.route)
             }

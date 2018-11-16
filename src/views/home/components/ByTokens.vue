@@ -51,6 +51,10 @@
                 </el-row>
             </el-form-item>
 
+            <!--<el-form-item>
+                <CountDownTimer color="#00ff00" :minute="time" :trigger="timeOver"/>
+            </el-form-item>
+
             <div v-if="$R.equals(time, 0)">
                 <el-form-item>
                     <div class="info-tooltip time-over">
@@ -59,11 +63,11 @@
                     </div>
                 </el-form-item>
                 <el-button
-                        class="button" type="primary"
-                        @click="giveMeTime">
+                    class="button" type="primary"
+                    @click="giveMeTime">
                     Add me +1 hour for deposit
                 </el-button>
-            </div>
+            </div>-->
 
             <div class="">
                 <el-button

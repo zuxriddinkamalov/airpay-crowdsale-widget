@@ -14,33 +14,51 @@
 import { mapState } from 'vuex'
 import { path } from 'ramda'
 import { VERIFICATION_CHANGES_SUBSCRIBTION } from '../../../graphql/airpay/subscriptions'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
+import { TEST_SET_VERIFY_STATUS } from '../../../graphql/airpay/mutations'
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
 
 export default {
   name: 'WaitDocument',
-  mounted () {
-    let self = this
-    setTimeout(function () {
-      self.$store.commit(SET_STEP, 3)
-      self.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
-    }, 3000)
-    this.$apollo.subscribe({
-      query: VERIFICATION_CHANGES_SUBSCRIBTION,
-      variables: function () {
-        return {
-          verificationHash: this.airpay.verificationHash
-        }
-      },
-      result (data) {
-        let status = path(['verificationChanges'], data)
-        if (status) {
-          self.$store.commit(SET_STEP, 3)
-          self.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
-        } else {
-          self.$store.commit(SET_ACTIVE_TAB, 'VError')
+  apollo: {
+    $subscribe: {
+      verificationStatus: {
+        query: VERIFICATION_CHANGES_SUBSCRIBTION,
+        variables: function () {
+          return {
+            verifiedHash: this.airpay.verificationHash
+          }
+        },
+        result (response) {
+          let status = path(['data', 'requestStatusChanges'], response)
+          switch (status) {
+            case 'WHITELISTED':
+              this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+              break
+            case 'LONGTIME':
+              this.$store.commit(SET_ACTIVE_TAB, 'VWait')
+              break
+            default:
+              this.$store.commit(SET_ACTIVE_TAB, 'VError')
+              break
+          }
         }
       }
-    })
+    }
+  },
+  mounted () {
+    this.$apollo
+      .mutate({
+        mutation: TEST_SET_VERIFY_STATUS,
+        variables: {
+          verifiedHash: this.airpay.verificationHash,
+          status: 'WHITELISTED'
+        }
+      })
+      .then(response => {
+      })
+      .catch(response => {
+        console.warn('error')
+      })
   },
   computed: {
     ...mapState(['airpay'])

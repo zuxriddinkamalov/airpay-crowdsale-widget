@@ -13,18 +13,22 @@ export const prepareValidateErrors = error => {
 
 export const prepareNetworkErrors = error => {
   let message = '<p class="error-header">Network error</p><ul class="error-list">'
-  forEach(msg => {
-    message += `<li class="error-item">${msg.message}</li>`
-  }, error)
+  if (error) {
+    forEach(msg => {
+      message += `<li class="error-item">${msg.message}</li>`
+    }, error)
+  }
   message += '</ul>'
   return message
 }
 
 export const prepareGraphQLErrors = error => {
   let message = '<p class="error-header">GraphQL error</p><ul class="error-list">'
-  forEach(msg => {
-    message += `<li class="error-item">${msg.message}</li>`
-  }, error)
+  if (error) {
+    forEach(msg => {
+      message += `<li class="error-item">${msg.message}</li>`
+    }, error)
+  }
   message += '</ul>'
   return message
 }

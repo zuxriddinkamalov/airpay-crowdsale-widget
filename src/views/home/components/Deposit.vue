@@ -32,7 +32,7 @@
                     <el-col :xs="24" :sm="12">
                         <slot name="label"><div class="uppercase label">Time for transaction</div></slot>
                         <div class="timer">
-                            <CountDownTimer :color="proccessColor" :minute="time" :trigger="timeOwer" />
+                            <CountDownTimer :color="proccessColor" :minute="time" :trigger="timeOver" />
                         </div>
                     </el-col>
                     <el-col :xs="24" :sm="12">
@@ -71,9 +71,9 @@ export default {
   data: function () {
     return {
       form: {
-        address: '',
-        time: 1
-      }
+        address: ''
+      },
+      time: 1
     }
   },
   methods: {

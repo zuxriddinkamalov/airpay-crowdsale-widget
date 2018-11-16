@@ -51,19 +51,19 @@ export const AUTHORIZATION_MUTATION = gql`
 export const PERFORM_BUYING_MUTATION = gql`
   mutation(
     $amount: Float!
-    $currency: String!
+    $asset: String!
     $withdrawAddress: String!
     $crowdsale: ID!
   ) {
     buyTokens(
       amount: $amount
-      currency: $currency
+      asset: $asset
       withdrawAddress: $withdrawAddress
       crowdsale: $crowdsale
     ) {
       address
       amount
-      currency
+      asset
     }
   }
 `
@@ -76,12 +76,12 @@ export const WITHDRAW_TOKENS_MUTATION = gql`
 
 export const UPLOAD_DOC_MUTATION = gql`
   mutation uploadDocs(
-    $selfie: Upload!,
-    $front: Upload!,
+    $selfie: Upload,
+    $front: Upload,
     $docType: String!,
     $input: uploadInput!,
-    $usaDocOne: Upload!,
-    $usaDocTwo: Upload!
+    $usaDocOne: Upload,
+    $usaDocTwo: Upload
   ) {
     uploadDocs(
       selfie: $selfie,
@@ -91,5 +91,11 @@ export const UPLOAD_DOC_MUTATION = gql`
       usaDocOne: $usaDocOne,
       usaDocTwo: $usaDocTwo
     )
+  }
+`
+// ONLY FOR TESTING
+export const TEST_SET_VERIFY_STATUS = gql`
+  mutation setVerifyStatus($verifiedHash: String!, $status: String!) {
+    setVerifyStatus(verifiedHash: $verifiedHash, status: $status)
   }
 `

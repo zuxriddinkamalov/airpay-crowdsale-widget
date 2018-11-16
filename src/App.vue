@@ -32,13 +32,8 @@ export default {
           loading: false
         })
       },
-      error (error) {
+      error () {
         this.$store.commit(SET_ACTIVE_TAB, 'VError')
-        this.$notify.error({
-          title: 'Error',
-          message: error.message,
-          showClose: false
-        })
       },
       watchLoading (isLoading, countModifier) {
         this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {

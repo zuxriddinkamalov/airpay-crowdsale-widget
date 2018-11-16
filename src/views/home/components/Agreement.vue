@@ -33,7 +33,7 @@ export default {
       // clientHeight
     },
     imAgree: function () {
-      let isWhitelisted = path(['airpay', 'authData', 'isWhitelisted'], this.authData)
+      let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay)
       if (isWhitelisted) {
         this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
       } else {

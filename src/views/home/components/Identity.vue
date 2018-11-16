@@ -45,12 +45,12 @@
                 </el-col>
                 <el-col :xs="24" :md="12">
                     <el-form-item
-                        prop="LastName"
+                        prop="lastName"
                         :rules="[
                             { required: true, message: 'Please enter last name', trigger: 'blur' },
                         ]">
                         <slot name="label"><div class="uppercase label">Last name</div></slot>
-                        <el-input placeholder="Please enter last name" type="email" v-model="form.LastName"></el-input>
+                        <el-input placeholder="Please enter last name" type="email" v-model="form.lastName"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -279,7 +279,6 @@ export default {
           if (equals('USA', this.form.nationality)) {
             [uploadData.usaDocOne, uploadData.usaDocTwo] = this.form.wTwoForm
           }
-          console.warn(uploadData)
           this.loading = true
           this.$apollo
             .mutate({
@@ -287,11 +286,11 @@ export default {
               variables: uploadData
             })
             .then(response => {
-              let verificationHash = path(['data', 'uploadDocs', 'verificationHash'], response)
+              let verificationHash = path(['data', 'uploadDocs'], response)
               if (verificationHash) {
                 this.$store.commit(SET_STEP, 3)
                 this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
-                this.$store.commit(SET_AIRPAY_STATE, {
+                this.$store.commit(`airpay/${SET_AIRPAY_STATE}`, {
                   key: 'verificationHash',
                   value: verificationHash
                 })

@@ -23,8 +23,8 @@ export default {
         -webkit-border-radius: 50%
         -moz-border-radius: 50%
         border-radius: 50%
-        border: 5px solid #ff0000
-        color: #ff0000
+        border: 5px solid var(--primary-color)
+        color: var(--primary-color)
         margin: 35px auto
         padding: 10px 0
     .success-title
