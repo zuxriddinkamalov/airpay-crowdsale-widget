@@ -43,19 +43,25 @@
                     </el-col>
                 </el-row>
             </el-form-item>
-            <div v-if="$R.equals(time, 0)">
-                <el-form-item>
-                    <div class="info-tooltip time-over">
-                        <h4 class="bold uppercase">Attention</h4>
-                        <p>If you don't have time have time to make deposit right now you can easy make it comfort time for you</p>
-                    </div>
-                </el-form-item>
-                <el-button
-                    class="button" type="primary"
-                    @click="giveMeTime">
-                    Add me +1 hour for deposit
-                </el-button>
-            </div>
+            <el-button
+                v-if="success || time === 0"
+                class="button" type="primary"
+                @click="returnToMainPage">
+                Return to main page
+            </el-button>
+            <!--<div v-if="$R.equals(time, 0)">-->
+                <!--<el-form-item>-->
+                    <!--<div class="info-tooltip time-over">-->
+                        <!--<h4 class="bold uppercase">Attention</h4>-->
+                        <!--<p>If you don't have time have time to make deposit right now you can easy make it comfort time for you</p>-->
+                    <!--</div>-->
+                <!--</el-form-item>-->
+                <!--<el-button-->
+                    <!--class="button" type="primary"-->
+                    <!--@click="giveMeTime">-->
+                    <!--Add me +1 hour for deposit-->
+                <!--</el-button>-->
+            <!--</div>-->
         </el-form>
     </div>
 </template>
@@ -106,23 +112,26 @@ export default {
     }
   },
   mounted () {
-    let self = this
-    setTimeout(() => {
-      self.$apollo
-        .mutate({
-          mutation: TEST_TXT_STATUS_CHANGE,
-          variables: {
-            txHash: self.airpay.byTokenData.txHash
-          }
-        })
-        .then(response => {
-        })
-        .catch(response => {
-          console.warn('error')
-        })
-    }, 5000)
+    // let self = this
+    // setTimeout(() => {
+    //   self.$apollo
+    //     .mutate({
+    //       mutation: TEST_TXT_STATUS_CHANGE,
+    //       variables: {
+    //         txHash: self.airpay.byTokenData.txHash
+    //       }
+    //     })
+    //     .then(response => {
+    //     })
+    //     .catch(response => {
+    //       console.warn('error')
+    //     })
+    // }, 5000)
   },
   methods: {
+    returnToMainPage: function () {
+      location.reload()
+    },
     timeOver: function () {
       this.time = 0
     },
