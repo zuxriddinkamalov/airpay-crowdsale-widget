@@ -99,7 +99,9 @@ export default {
           let status = path(['data', 'txChange', 'status'], response);
           switch (status) {
             case 'PROCESS':
+              let notifySound = new Audio('sounds/audio_file.mp3');
               this.success = true;
+              notifySound.play();
               break;
             default:
               this.$store.commit(SET_ACTIVE_TAB, 'VError');
@@ -109,23 +111,23 @@ export default {
       }
     }
   },
-  // mounted() {
-  // let self = this
-  // setTimeout(() => {
-  //   self.$apollo
-  //     .mutate({
-  //       mutation: TEST_TXT_STATUS_CHANGE,
-  //       variables: {
-  //         txHash: self.airpay.byTokenData.txHash
-  //       }
-  //     })
-  //     .then(response => {
-  //     })
-  //     .catch(response => {
-  //       console.warn('error')
-  //     })
-  // }, 5000)
-  // },
+  mounted() {
+    // let self = this
+    // setTimeout(() => {
+    //   self.$apollo
+    //     .mutate({
+    //       mutation: TEST_TXT_STATUS_CHANGE,
+    //       variables: {
+    //         txHash: self.airpay.byTokenData.txHash
+    //       }
+    //     })
+    //     .then(response => {
+    //     })
+    //     .catch(response => {
+    //       console.warn('error')
+    //     })
+    // }, 5000)
+  },
   methods: {
     returnToMainPage: function() {
       location.reload();
