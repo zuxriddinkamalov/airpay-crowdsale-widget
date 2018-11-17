@@ -1,5 +1,5 @@
 <template>
-    <div class="timer-container">
+    <div class="timer-counter-container">
         <div class="timer">
             <div class="number bold">{{ counter.days }}</div>
             <span class="time-meter uppercase">Days</span>
@@ -71,7 +71,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-    .timer-container
+    .timer-counter-container
         display: flex
         justify-content: space-between
         .timer
