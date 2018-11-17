@@ -61,52 +61,50 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { path } from 'ramda'
+import { mapState } from 'vuex';
+import { path } from 'ramda';
 
-import CountDownTimer from '@/components/CountDownTimer'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
-import {
-  TX_CHANGES_SUBSCRIPTION
-} from '../../../graphql/airpay/subscriptions'
-import { TEST_TXT_STATUS_CHANGE } from '../../../graphql/airpay/mutations'
+import CountDownTimer from '@/components/CountDownTimer';
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types';
+import { TX_CHANGES_SUBSCRIPTION } from '../../../graphql/airpay/subscriptions';
+import { TEST_TXT_STATUS_CHANGE } from '../../../graphql/airpay/mutations';
 
 export default {
   name: 'Deposit',
-  data: function () {
+  data: function() {
     return {
       form: {
         address: ''
       },
-      time: 1,
+      time: 10,
       success: false
-    }
+    };
   },
   apollo: {
     $subscribe: {
       verificationStatus: {
         query: TX_CHANGES_SUBSCRIPTION,
-        variables: function () {
+        variables: function() {
           return {
             txHash: this.airpay.byTokenData.txHash
-          }
+          };
         },
-        result (response) {
-          let status = path(['data', 'txChange', 'status'], response)
+        result(response) {
+          let status = path(['data', 'txChange', 'status'], response);
           switch (status) {
             case 'PROCESS':
-              this.success = true
-              break
+              this.success = true;
+              break;
             default:
-              this.$store.commit(SET_ACTIVE_TAB, 'VError')
-              break
+              this.$store.commit(SET_ACTIVE_TAB, 'VError');
+              break;
           }
         }
       }
     }
   },
-  mounted () {
-    let self = this
+  mounted() {
+    let self = this;
     setTimeout(() => {
       self.$apollo
         .mutate({
@@ -115,25 +113,24 @@ export default {
             txHash: self.airpay.byTokenData.txHash
           }
         })
-        .then(response => {
-        })
+        .then(response => {})
         .catch(response => {
-          console.warn('error')
-        })
-    }, 5000)
+          console.warn('error');
+        });
+    }, 5000);
   },
   methods: {
-    timeOver: function () {
-      this.time = 0
+    timeOver: function() {
+      this.time = 0;
     },
-    copySuccess: function () {
+    copySuccess: function() {
       this.$message({
         message: 'Successfully copied',
         type: 'success'
-      })
+      });
     },
-    paymentDone: function () {
-      this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+    paymentDone: function() {
+      this.$store.commit(SET_ACTIVE_TAB, 'VFinish');
       // let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay)
       // if (isWhitelisted) {
       //   this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
@@ -141,23 +138,20 @@ export default {
       //   this.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
       // }
     },
-    giveMeTime: function () {
-      this.time = 1
+    giveMeTime: function() {
+      this.time = 1;
     }
   },
   computed: {
-    ...mapState([
-      'airpay',
-      'color'
-    ]),
-    proccessColor: function () {
-      return this.color
+    ...mapState(['airpay', 'color']),
+    proccessColor: function() {
+      return this.color;
     }
   },
   components: {
     CountDownTimer
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
