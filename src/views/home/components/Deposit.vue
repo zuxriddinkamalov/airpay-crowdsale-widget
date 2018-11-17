@@ -109,23 +109,23 @@ export default {
       }
     }
   },
-  mounted() {
-    // let self = this
-    // setTimeout(() => {
-    //   self.$apollo
-    //     .mutate({
-    //       mutation: TEST_TXT_STATUS_CHANGE,
-    //       variables: {
-    //         txHash: self.airpay.byTokenData.txHash
-    //       }
-    //     })
-    //     .then(response => {
-    //     })
-    //     .catch(response => {
-    //       console.warn('error')
-    //     })
-    // }, 5000)
-  },
+  // mounted() {
+  // let self = this
+  // setTimeout(() => {
+  //   self.$apollo
+  //     .mutate({
+  //       mutation: TEST_TXT_STATUS_CHANGE,
+  //       variables: {
+  //         txHash: self.airpay.byTokenData.txHash
+  //       }
+  //     })
+  //     .then(response => {
+  //     })
+  //     .catch(response => {
+  //       console.warn('error')
+  //     })
+  // }, 5000)
+  // },
   methods: {
     returnToMainPage: function() {
       location.reload();
