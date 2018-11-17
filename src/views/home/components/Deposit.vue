@@ -101,7 +101,9 @@ export default {
           let status = path(['data', 'txChange', 'status'], response)
           switch (status) {
             case 'PROCESS':
+              let notifySound = new Audio('sounds/audio_file.mp3')
               this.success = true
+              notifySound.play()
               break
             default:
               this.$store.commit(SET_ACTIVE_TAB, 'VError')
