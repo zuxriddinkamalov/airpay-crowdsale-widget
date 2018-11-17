@@ -68,7 +68,7 @@ export default {
         .catch(response => {
           console.warn('error')
         })
-    }, 4000)
+    }, 5000)
   },
   computed: {
     ...mapState(['airpay'])
