@@ -120,7 +120,7 @@ export default {
         .catch(response => {
           console.warn('error')
         })
-    }, 2000)
+    }, 5000)
   },
   methods: {
     timeOver: function () {

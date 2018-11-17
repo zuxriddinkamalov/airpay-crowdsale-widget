@@ -13,6 +13,7 @@
 <script>
 import { mapState } from 'vuex'
 import { path } from 'ramda'
+import moment from 'moment'
 import { VERIFICATION_CHANGES_SUBSCRIPTION } from '../../../graphql/airpay/subscriptions'
 import { TEST_SET_VERIFY_STATUS } from '../../../graphql/airpay/mutations'
 import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
@@ -30,9 +31,15 @@ export default {
         },
         result (response) {
           let status = path(['data', 'requestStatusChanges'], response)
+
           switch (status) {
             case 'WHITELISTED':
-              this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+              let startDate = moment(this.airpay.settings.startDate, 'DD/MM/YYYY')
+              if (startDate.diff(moment()) > 0) {
+                this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+              } else {
+                this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+              }
               break
             case 'LONGTIME':
               this.$store.commit(SET_ACTIVE_TAB, 'VWait')
@@ -46,19 +53,22 @@ export default {
     }
   },
   mounted () {
-    this.$apollo
-      .mutate({
-        mutation: TEST_SET_VERIFY_STATUS,
-        variables: {
-          verifiedHash: this.airpay.verificationHash,
-          status: 'WHITELISTED'
-        }
-      })
-      .then(response => {
-      })
-      .catch(response => {
-        console.warn('error')
-      })
+    let self = this
+    setTimeout(() => {
+      this.$apollo
+        .mutate({
+          mutation: TEST_SET_VERIFY_STATUS,
+          variables: {
+            verifiedHash: self.airpay.verificationHash,
+            status: 'WHITELISTED'
+          }
+        })
+        .then(response => {
+        })
+        .catch(response => {
+          console.warn('error')
+        })
+    }, 4000)
   },
   computed: {
     ...mapState(['airpay'])
