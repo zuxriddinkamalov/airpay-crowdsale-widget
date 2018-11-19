@@ -24,28 +24,31 @@
 </template>
 
 <script>
-import { path } from 'ramda'
-import { mapState } from 'vuex'
-import { isAddress } from 'ethereum-address'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
+import { path } from 'ramda';
+import { mapState } from 'vuex';
+import { isAddress } from 'ethereum-address';
+import { prepareValidateErrors } from '../../../helpers/general';
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
 
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
-import { PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
+import { PERFORM_BUYING_MUTATION } from '../../../graphql/airpay/mutations';
+import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types';
 
 export default {
   name: 'Ethereum',
-  data: function () {
+  data: function() {
     let checkEthereum = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('Ethereum address required'))
+        callback(new Error('Ethereum address required'));
       } else if (!isAddress(value)) {
-        callback(new Error('Please enter valid ethereum address'))
+        callback(new Error('Please enter valid ethereum address'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loading: false,
       form: {
@@ -54,57 +57,59 @@ export default {
       rulesEthereum: {
         withDrawAddress: [{ validator: checkEthereum, trigger: 'blur' }]
       }
-    }
+    };
   },
   methods: {
-    ethereumSubmit (formName) {
+    ethereumSubmit(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.loading = true
+          this.loading = true;
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
             ...this.$store.state.forms,
             recipientForm: this.form
-          })
-          this.$apollo.mutate({
-            mutation: PERFORM_BUYING_MUTATION,
-            variables: {
-              amount: path(['byTokenForm', 'pledge'], this.forms),
-              asset: path(['byTokenForm', 'currency'], this.forms),
-              withdrawAddress: path(['recipientForm', 'withDrawAddress'], this.forms),
-              crowdsale: path(['query', 'crowdsale'], this.route)
-            }
-          }).then(response => {
-            let data = path(['data', 'buyTokens'], response)
-            this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
-              ...this.$store.state.airpay,
-              byTokenData: data
+          });
+          this.$apollo
+            .mutate({
+              mutation: PERFORM_BUYING_MUTATION,
+              variables: {
+                amount: path(['byTokenForm', 'pledge'], this.forms),
+                asset: path(['byTokenForm', 'currency'], this.forms),
+                withdrawAddress: path(
+                  ['recipientForm', 'withDrawAddress'],
+                  this.forms
+                ),
+                crowdsale: path(['query', 'crowdsale'], this.route)
+              }
             })
-            this.$store.commit(SET_STEP, 3)
-            this.$store.commit(SET_ACTIVE_TAB, 'VDeposit')
-            this.loading = false
-          }).catch(response => {
-            this.loading = false
-          })
+            .then(response => {
+              let data = path(['data', 'buyTokens'], response);
+              this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
+                ...this.$store.state.airpay,
+                byTokenData: data
+              });
+              this.$store.commit(SET_STEP, 3);
+              this.$store.commit(SET_ACTIVE_TAB, 'VDeposit');
+              this.loading = false;
+            })
+            .catch(response => {
+              this.loading = false;
+            });
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     }
   },
   computed: {
-    ...mapState([
-      'airpay',
-      'forms',
-      'route'
-    ])
+    ...mapState(['airpay', 'forms', 'route'])
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
