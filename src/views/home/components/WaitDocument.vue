@@ -11,12 +11,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { path } from 'ramda'
-import moment from 'moment'
-import { VERIFICATION_CHANGES_SUBSCRIPTION } from '../../../graphql/airpay/subscriptions'
-import { TEST_SET_VERIFY_STATUS } from '../../../graphql/airpay/mutations'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { mapState } from 'vuex';
+import { path } from 'ramda';
+import moment from 'moment';
+import { VERIFICATION_CHANGES_SUBSCRIPTION } from '../../../graphql/airpay/subscriptions';
+import { TEST_SET_VERIFY_STATUS } from '../../../graphql/airpay/mutations';
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
 
 export default {
   name: 'WaitDocument',
@@ -24,36 +27,41 @@ export default {
     $subscribe: {
       verificationStatus: {
         query: VERIFICATION_CHANGES_SUBSCRIPTION,
-        variables: function () {
+        variables: function() {
           return {
             verifiedHash: this.airpay.verificationHash
-          }
+          };
         },
-        result (response) {
-          let status = path(['data', 'requestStatusChanges'], response)
+        result(response) {
+          let status = path(['data', 'requestStatusChanges'], response);
 
           switch (status) {
             case 'WHITELISTED':
-              let startDate = moment(this.airpay.settings.startDate, 'DD/MM/YYYY')
+              let startDate = moment(
+                this.airpay.settings.startDate,
+                'DD/MM/YYYY'
+              );
               if (startDate.diff(moment()) > 0) {
-                this.$store.commit(SET_ACTIVE_TAB, 'VFinish')
+                this.$store.commit(SET_STEP, 3);
+                this.$store.commit(SET_ACTIVE_TAB, 'VFinish');
               } else {
-                this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+                this.$store.commit(SET_STEP, 3);
+                this.$store.commit(SET_ACTIVE_TAB, 'VEthereum');
               }
-              break
+              break;
             case 'LONGTIME':
-              this.$store.commit(SET_ACTIVE_TAB, 'VWait')
-              break
+              this.$store.commit(SET_ACTIVE_TAB, 'VWait');
+              break;
             default:
-              this.$store.commit(SET_ACTIVE_TAB, 'VError')
-              break
+              this.$store.commit(SET_ACTIVE_TAB, 'VError');
+              break;
           }
         }
       }
     }
   },
-  mounted () {
-    let self = this
+  mounted() {
+    let self = this;
     setTimeout(() => {
       this.$apollo
         .mutate({
@@ -63,17 +71,16 @@ export default {
             status: 'WHITELISTED'
           }
         })
-        .then(response => {
-        })
+        .then(response => {})
         .catch(response => {
-          console.warn('error')
-        })
-    }, 5000)
+          console.warn('error');
+        });
+    }, 5000);
   },
   computed: {
     ...mapState(['airpay'])
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>

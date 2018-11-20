@@ -175,7 +175,7 @@
                                         slot="trigger"
                                         type="primary"
                                         size="small" round>
-                                        <span class="icon"><i class="el-icon-plus"></i></span> Selfie photo
+                                        <span class="icon"><i class="el-icon-plus"></i></span> Front photo
                                     </el-button>
                                     <el-button
                                         class="clear-file"
@@ -233,15 +233,18 @@
 </template>
 
 <script>
-import { prop, forEach, path, equals } from 'ramda'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
-import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_STATE } from '../../../store/modules/airpay/mutation-types'
+import { prop, forEach, path, equals } from 'ramda';
+import { prepareValidateErrors } from '../../../helpers/general';
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
+import { UPLOAD_DOC_MUTATION } from '../../../graphql/airpay/mutations';
+import { SET_AIRPAY_STATE } from '../../../store/modules/airpay/mutation-types';
 
 export default {
   name: 'Identity',
-  data: function () {
+  data: function() {
     return {
       loading: false,
       countryList: require('@/constant/country-list.json'),
@@ -257,10 +260,10 @@ export default {
         birth: '',
         wTwoForm: []
       }
-    }
+    };
   },
   methods: {
-    submit (formName) {
+    submit(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           let uploadData = {
@@ -275,60 +278,59 @@ export default {
               sex: this.form.sex,
               birth: this.form.birth
             }
-          }
+          };
           if (equals('USA', this.form.nationality)) {
-            [uploadData.usaDocOne, uploadData.usaDocTwo] = this.form.wTwoForm
+            [uploadData.usaDocOne, uploadData.usaDocTwo] = this.form.wTwoForm;
           }
-          this.loading = true
+          this.loading = true;
           this.$apollo
             .mutate({
               mutation: UPLOAD_DOC_MUTATION,
               variables: uploadData
             })
             .then(response => {
-              let verificationHash = path(['data', 'uploadDocs'], response)
+              let verificationHash = path(['data', 'uploadDocs'], response);
               if (verificationHash) {
-                this.$store.commit(SET_STEP, 3)
-                this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument')
+                this.$store.commit(SET_ACTIVE_TAB, 'VWaitDocument');
                 this.$store.commit(`airpay/${SET_AIRPAY_STATE}`, {
                   key: 'verificationHash',
                   value: verificationHash
-                })
+                });
               } else {
-                this.$message.error('Can`t upload files')
+                this.$message.error('Can`t upload files');
               }
-              this.loading = false
+              this.loading = false;
             })
             .catch(response => {
-              this.loading = false
-            })
+              this.loading = false;
+            });
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     },
-    clearFile: function (ref) {
-      this.form[ref] = null
-      this.$refs[ref].clearFiles()
+    clearFile: function(ref) {
+      this.form[ref] = null;
+      this.$refs[ref].clearFiles();
     },
-    selectFiles: function (file, fileList, key) {
-      this.form[key] = []
+    selectFiles: function(file, fileList, key) {
+      this.form[key] = [];
       forEach(fileRaw => {
-        let file = prop('raw', fileRaw)
-        this.form[key].push(file)
-      }, fileList)
+        let file = prop('raw', fileRaw);
+        this.form[key].push(file);
+      }, fileList);
     },
-    selectFile: function (file, fileList, key) {
-      this.form[key] = prop('raw', file)
+    selectFile: function(file, fileList, key) {
+      this.form[key] = prop('raw', file);
     }
   }
-}
+};
 </script>
 
 <style lang="sass">

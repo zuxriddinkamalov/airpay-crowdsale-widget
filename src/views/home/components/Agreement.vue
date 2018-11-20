@@ -14,39 +14,42 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { path } from 'ramda'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { mapState } from 'vuex';
+import { path } from 'ramda';
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
 
 export default {
   name: 'Agreement',
-  data: function () {
+  data: function() {
     return {
       loading: false
-    }
+    };
   },
   methods: {
-    readAgreement: function (e) {
+    readAgreement: function(e) {
       // console.warn(e.target.scrollTop)
       // console.warn(e)
       // scrollHeight
       // clientHeight
     },
-    imAgree: function () {
-      let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay)
+    imAgree: function() {
+      let isWhitelisted = path(['authData', 'isWhitelisted'], this.airpay);
       if (isWhitelisted) {
-        this.$store.commit(SET_ACTIVE_TAB, 'VEthereum')
+        this.$store.commit(SET_STEP, 3);
+        this.$store.commit(SET_ACTIVE_TAB, 'VEthereum');
       } else {
-        this.$store.commit(SET_ACTIVE_TAB, 'VIdentity')
+        this.$store.commit(SET_STEP, 2);
+        this.$store.commit(SET_ACTIVE_TAB, 'VIdentity');
       }
     }
   },
   computed: {
-    ...mapState([
-      'airpay'
-    ])
+    ...mapState(['airpay'])
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>

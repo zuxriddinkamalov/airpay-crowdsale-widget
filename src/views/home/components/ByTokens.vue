@@ -63,13 +63,16 @@
 </template>
 
 <script>
-import { map, propEq, find, nth, path, prop } from 'ramda'
-import { mapState } from 'vuex'
-import '@/plugins/vue-swimline'
-import { SET_ACTIVE_TAB, SET_STEP } from '../../../store/modules/general/mutation-types'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types'
-import CountDownTimer from '@/components/CountDownTimer'
+import { map, propEq, find, nth, path, prop } from 'ramda';
+import { mapState } from 'vuex';
+import '@/plugins/vue-swimline';
+import {
+  SET_ACTIVE_TAB,
+  SET_STEP
+} from '../../../store/modules/general/mutation-types';
+import { prepareValidateErrors } from '../../../helpers/general';
+import { SET_FORM_DATA } from '../../../store/modules/forms/mutation-types';
+import CountDownTimer from '@/components/CountDownTimer';
 
 const SLIDER = [
   {
@@ -96,88 +99,96 @@ const SLIDER = [
     sum: 4.9,
     currency: 'BTC'
   }
-]
+];
 export default {
   name: 'ByTokens',
-  data: function () {
+  data: function() {
     return {
       form: {
         pledge: null,
         currency: null
       },
       time: 0.3
-    }
+    };
   },
-  mounted () {
-    this.form.currency = path(['asset', 'symbol'], nth(0, this.airpay.settings.assetAccept))
+  mounted() {
+    this.form.currency = path(
+      ['asset', 'symbol'],
+      nth(0, this.airpay.settings.assetAccept)
+    );
   },
   filters: {
-    money: function (price) {
+    money: function(price) {
       if (price) {
-        let val = parseInt(price)
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        let val = parseInt(price);
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       }
-      return '0'
+      return '0';
     }
   },
   methods: {
-    submit: function (formName) {
+    submit: function(formName) {
       if (this.loading) {
-        return
+        return;
       }
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
           this.$store.commit(`forms/${SET_FORM_DATA}`, {
             ...this.$store.state.form,
             byTokenForm: this.form
-          })
-          this.$store.commit(SET_ACTIVE_TAB, 'VAuthorization')
-          this.$store.commit(SET_STEP, 2)
+          });
+          this.$store.commit(SET_ACTIVE_TAB, 'VAuthorization');
+          this.$store.commit(SET_STEP, 1);
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     }
   },
   computed: {
     ...mapState(['airpay']),
-    sliderText: function () {
+    sliderText: function() {
       return map(
         item =>
           `<img class="flag" src="${item.flag}" alt="" />
         User from <span class="bold">${
-  item.country
-}</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
+          item.country
+        }</span> pledge <span class="bold">${item.sum} ${item.currency}</span>`,
         SLIDER
-      )
+      );
     },
-    currencies: function () {
-      let assetAccept = this.airpay.settings.assetAccept
+    currencies: function() {
+      let assetAccept = this.airpay.settings.assetAccept;
       return map(currency => {
         return {
           symbol: currency.asset.symbol,
           rate: currency.rate,
           min: currency.minAmount
-        }
-      }, assetAccept)
+        };
+      }, assetAccept);
     },
-    rulesByToken: function () {
-      let currentCurrency = find(propEq('symbol', this.form.currency), this.currencies)
+    rulesByToken: function() {
+      let currentCurrency = find(
+        propEq('symbol', this.form.currency),
+        this.currencies
+      );
       let checkZero = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Amount is required'))
+          callback(new Error('Amount is required'));
         } else if (value < currentCurrency.min) {
-          callback(new Error(`Amount can not be less then ${currentCurrency.min}`))
+          callback(
+            new Error(`Amount can not be less then ${currentCurrency.min}`)
+          );
         } else {
-          callback()
+          callback();
         }
-      }
+      };
       return {
         pledge: [
           {
@@ -185,17 +196,20 @@ export default {
             trigger: ['submit', 'blur']
           }
         ]
-      }
+      };
     },
-    getSum: function () {
-      let rate = prop('rate', find(propEq('symbol', this.form.currency), this.currencies))
-      return parseFloat(rate) * parseFloat(this.form.pledge)
+    getSum: function() {
+      let rate = prop(
+        'rate',
+        find(propEq('symbol', this.form.currency), this.currencies)
+      );
+      return parseFloat(rate) * parseFloat(this.form.pledge);
     }
   },
   components: {
     CountDownTimer
   }
-}
+};
 </script>
 
 <style lang="sass">

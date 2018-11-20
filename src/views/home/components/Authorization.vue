@@ -51,42 +51,42 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { path, prop } from 'ramda'
-import { prepareValidateErrors } from '../../../helpers/general'
-import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types'
+import { mapState } from 'vuex';
+import { path, prop } from 'ramda';
+import { prepareValidateErrors } from '../../../helpers/general';
+import { SET_ACTIVE_TAB } from '../../../store/modules/general/mutation-types';
 import {
   AUTHORIZATION_MUTATION,
   ENTER_MUTATION
-} from '../../../graphql/airpay/mutations'
-import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types'
+} from '../../../graphql/airpay/mutations';
+import { SET_AIRPAY_DATA } from '../../../store/modules/airpay/mutation-types';
 
 export default {
   name: 'Authorization',
-  data: function () {
+  data: function() {
     return {
       loading: false,
       form: {
         email: '',
         code: ''
       }
-    }
+    };
   },
   methods: {
-    submit () {
+    submit() {
       if (this.loading) {
-        return
+        return;
       }
       if (prop('hash', this.airpay)) {
-        this.verificate('verificateForm')
+        this.verificate('verificateForm');
       } else {
-        this.enterToSystem('recForm')
+        this.enterToSystem('recForm');
       }
     },
-    enterToSystem (formName) {
+    enterToSystem(formName) {
       this.$refs[formName].validate((valid, error) => {
         if (valid) {
-          this.loading = true
+          this.loading = true;
           this.$apollo
             .mutate({
               mutation: ENTER_MUTATION,
@@ -99,49 +99,49 @@ export default {
               this.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
                 ...this.$store.state.airpay,
                 hash: path(['data', 'userEnter'], response)
-              })
-              this.loading = false
+              });
+              this.loading = false;
             })
             .catch(response => {
-              this.$message.error(response)
-              this.loading = false
-            })
+              this.$message.error(response);
+              this.loading = false;
+            });
         } else {
-          let message = prepareValidateErrors(error)
+          let message = prepareValidateErrors(error);
           this.$message({
             dangerouslyUseHTMLString: true,
             type: 'error',
             message: message
-          })
-          return false
+          });
+          return false;
         }
-      })
+      });
     },
-    verificate (formName) {
-      let self = this
-      let enter = new Promise(function (resolve, reject) {
+    verificate(formName) {
+      let self = this;
+      let enter = new Promise(function(resolve, reject) {
         self.$refs['recForm'].validate((valid, error) => {
           if (valid) {
-            resolve()
+            resolve();
           } else {
-            let message = prepareValidateErrors(error)
+            let message = prepareValidateErrors(error);
             self.$message({
               dangerouslyUseHTMLString: true,
               type: 'error',
               message: message
-            })
+            });
           }
-        })
-      })
-      let verification = new Promise(function (resolve, reject) {
+        });
+      });
+      let verification = new Promise(function(resolve, reject) {
         self.$refs[formName].validate((valid, error) => {
           if (valid) {
-            resolve()
+            resolve();
           }
-        })
-      })
-      Promise.all([enter, verification]).then(function () {
-        self.loading = true
+        });
+      });
+      Promise.all([enter, verification]).then(function() {
+        self.loading = true;
         self.$apollo
           .mutate({
             mutation: AUTHORIZATION_MUTATION,
@@ -151,25 +151,26 @@ export default {
             }
           })
           .then(response => {
-            let data = path(['data', 'userAuth'], response)
-            sessionStorage.setItem('token', prop('authorization', data))
+            let data = path(['data', 'userAuth'], response);
+            sessionStorage.setItem('token', prop('authorization', data));
             self.$store.commit(`airpay/${SET_AIRPAY_DATA}`, {
               ...self.$store.state.airpay,
               authData: data
-            })
-            self.$store.commit(SET_ACTIVE_TAB, 'VAgree')
-            self.loading = false
+            });
+
+            self.$store.commit(SET_ACTIVE_TAB, 'VAgree');
+            self.loading = false;
           })
           .catch(response => {
-            self.loading = false
-          })
-      })
+            self.loading = false;
+          });
+      });
     }
   },
   computed: {
     ...mapState(['airpay'])
   }
-}
+};
 </script>
 
 <style lang="sass" scoped>
