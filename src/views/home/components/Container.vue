@@ -21,33 +21,33 @@
 </template>
 
 <script>
-import { path } from 'ramda';
-import { mapState, mapGetters } from 'vuex';
-import moment from 'moment';
+import { path } from 'ramda'
+import { mapState, mapGetters } from 'vuex'
+import moment from 'moment'
 
-import VHeader from './Header';
+import VHeader from './Header'
 
-import VStartIndicator from './StartIndicator';
-import ByTokens from './ByTokens';
-import VEthereum from './Ethereum';
-import VAuthorization from './Authorization';
-import VAgree from './Agreement';
-import VDeposit from './Deposit';
-import VIdentity from './Identity';
-import VWait from './Wait';
-import VWaitDocument from './WaitDocument';
-import VCrowdsaleReached from './CrowdsaleReached';
-import VFinish from './Finish';
-import VError from './Error';
+import VStartIndicator from './StartIndicator'
+import ByTokens from './ByTokens'
+import VEthereum from './Ethereum'
+import VAuthorization from './Authorization'
+import VAgree from './Agreement'
+import VDeposit from './Deposit'
+import VIdentity from './Identity'
+import VWait from './Wait'
+import VWaitDocument from './WaitDocument'
+import VCrowdsaleReached from './CrowdsaleReached'
+import VFinish from './Finish'
+import VError from './Error'
 
 import {
   SET_ACTIVE_TAB,
   SET_STEP
-} from '../../../store/modules/general/mutation-types';
+} from '../../../store/modules/general/mutation-types'
 import {
   prepareGraphQLErrors,
   prepareNetworkErrors
-} from '../../../helpers/general';
+} from '../../../helpers/general'
 
 export default {
   name: 'Container',
@@ -60,50 +60,50 @@ export default {
   computed: {
     ...mapState(['component', 'step']),
     ...mapGetters(['networkError', 'graphQLError']),
-    logo() {
-      return path(['settings', 'organization', 'logo'], this.settings);
+    logo () {
+      return path(['settings', 'organization', 'logo'], this.settings)
     },
-    title() {
-      return path(['settings', 'name'], this.settings);
+    title () {
+      return path(['settings', 'name'], this.settings)
     }
   },
-  mounted() {
+  mounted () {
     if (!this.settings.settings) {
-      return this.$store.commit(SET_STEP, 0);
+      return this.$store.commit(SET_STEP, 0)
     }
-    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY');
-    let endDate = moment(this.settings.settings.endDate, 'DD/MM/YYYY');
+    let startDate = moment(this.settings.settings.startDate, 'DD/MM/YYYY')
+    let endDate = moment(this.settings.settings.endDate, 'DD/MM/YYYY')
     if (startDate.diff(moment()) > 0) {
-      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator');
+      this.$store.commit(SET_ACTIVE_TAB, 'VStartIndicator')
     } else if (moment().diff(endDate) > 0) {
-      this.$store.commit(SET_STEP, 0);
-      this.$store.commit(SET_ACTIVE_TAB, 'VCrowdsaleReached');
+      this.$store.commit(SET_STEP, 0)
+      this.$store.commit(SET_ACTIVE_TAB, 'VCrowdsaleReached')
     } else {
-      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens');
+      this.$store.commit(SET_ACTIVE_TAB, 'ByTokens')
     }
   },
   watch: {
     networkError: {
       deep: true,
-      handler: function(newValue, oldValue) {
-        let message = prepareNetworkErrors(newValue);
-        this.$store.commit(SET_ACTIVE_TAB, 'VError');
+      handler: function (newValue, oldValue) {
+        let message = prepareNetworkErrors(newValue)
+        this.$store.commit(SET_ACTIVE_TAB, 'VError')
         this.$message({
           dangerouslyUseHTMLString: true,
           type: 'error',
           message: message
-        });
+        })
       }
     },
     graphQLError: {
       deep: true,
-      handler: function(newValue, oldValue) {
-        let message = prepareGraphQLErrors(newValue);
+      handler: function (newValue, oldValue) {
+        let message = prepareGraphQLErrors(newValue)
         this.$message({
           dangerouslyUseHTMLString: true,
           type: 'error',
           message: message
-        });
+        })
       }
     }
   },
@@ -122,7 +122,7 @@ export default {
     VError,
     VWait
   }
-};
+}
 </script>
 
 <style lang="sass">

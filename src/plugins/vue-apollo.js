@@ -20,8 +20,6 @@ import { SubscriptionClient } from 'subscriptions-transport-ws'
 import Store from '@/store'
 import { API_URL, API_WS_URL } from '@/constant/api'
 
-const token = sessionStorage.getItem('token')
-
 const hasSubscriptionOperation = ({ query: { definitions } }) =>
   definitions.some(
     ({ kind, operation }) =>
@@ -31,7 +29,7 @@ const hasSubscriptionOperation = ({ query: { definitions } }) =>
 const client = new SubscriptionClient(API_WS_URL, {
   reconnect: true,
   connectionParams: {
-    authorization: token || ''
+    authorization: sessionStorage.getItem('token') || ''
   },
   connectionCallback: function (error) {
     if (error) {
@@ -44,7 +42,10 @@ const wsLink = new WebSocketLink(client)
 
 // eslint-disable-next-line
 const httpLink = new createUploadLink({
-  uri: API_URL
+  uri: API_URL,
+  connectionParams: {
+    authorization: sessionStorage.getItem('token') || ''
+  }
 })
 
 const checkError = onError(({ graphQLErrors, networkError }) => {
@@ -61,7 +62,7 @@ const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      authorization: token || ''
+      authorization: sessionStorage.getItem('token') || ''
     }
   }))
 
