@@ -84,7 +84,7 @@ export default {
       form: {
         address: ''
       },
-      time: 1,
+      time: 10,
       success: false
     }
   },
