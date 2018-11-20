@@ -18,10 +18,6 @@
                         label="International passport"
                         value="international_passport">
                     </el-option>
-                    <el-option
-                        label="USA inv accreditation proofs"
-                        value="usa_inv_accreditation_proofs">
-                    </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item
