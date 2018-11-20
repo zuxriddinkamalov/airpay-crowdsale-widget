@@ -8,7 +8,7 @@
                 :stroke-width="5"
                 :show-text="success"
                 type="circle"
-                :status="success?'success':''"
+                :status="success?'success':'text'"
                 :percentage="getPercent">
             </el-progress>
             <div v-if="!success" class="timer">{{seconds | prettify}}</div>
