@@ -51,7 +51,7 @@
     "@vue/cli-service": "^3.0.4",
     "@vue/eslint-config-standard": "^3.0.4",
     "express": "^4.16.4",
-    "node-sass": "^4.9.0",
+    "node-sass": "^7.0.0",
     "sass-loader": "^7.0.1",
     "serve-static": "^1.13.2",
     "vue-template-compiler": "^2.5.17"
