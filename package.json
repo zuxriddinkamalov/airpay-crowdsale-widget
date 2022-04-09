@@ -28,7 +28,7 @@
     "font-awesome": "^4.7.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.9.2",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "ramda": "^0.25.0",
     "rxjs": "^6.3.3",
     "subscriptions-transport-ws": "^0.9.15",
