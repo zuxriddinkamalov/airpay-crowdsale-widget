@@ -48,7 +48,7 @@
     "@fortawesome/fontawesome-free": "^5.4.2",
     "@vue/cli-plugin-babel": "^3.0.4",
     "@vue/cli-plugin-eslint": "^3.0.4",
-    "@vue/cli-service": "^3.0.4",
+    "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-standard": "^3.0.4",
     "express": "^4.16.4",
     "node-sass": "^4.9.0",
